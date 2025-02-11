@@ -9,6 +9,7 @@
 #include "SceneManager.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "Time.h"
 #include <thread>
 #include <iostream>
 
@@ -84,23 +85,23 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
 	auto& input = InputManager::GetInstance();
-
+	auto& time = Time::GetInstance();
 	
+
 	bool doContinue = true;
 
-	auto lastTime = std::chrono::high_resolution_clock::now();
+	
 	float lag = 0.0f;
 
-	const float fixedTimeStep = 0.02f; 
-	const int targetFrameRate = 60;
-	const int msPerFrame = 1000 / targetFrameRate;
+	const float fixedTimeStep = time.GetFixedTimeStep();
+	time.SetStartOfTheFrameTime();
 
 	while (doContinue)
 	{
-		const auto currentTime = std::chrono::high_resolution_clock::now();
-		const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count(); // In seconds
-		lastTime = currentTime;
-		lag += deltaTime;
+		
+		time.Update();
+
+		lag += time.GetDeltaTime();
 
 		doContinue = input.ProcessInput();
 		while (lag >= fixedTimeStep)
@@ -112,12 +113,15 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		sceneManager.Update();
 		renderer.Render();
 
-		std::cout << 1 / deltaTime << '\n';
+		std::cout << 1 / time.GetDeltaTime() << '\n';
 
 
-		const auto frameEndTime = std::chrono::high_resolution_clock::now();
-		const auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(frameEndTime - currentTime).count();
-		const auto sleepTime = msPerFrame - elapsedTime; // Time left to reach the target frame rate
+		//const auto frameEndTime = std::chrono::high_resolution_clock::now();
+		//const auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(frameEndTime - currentTime).count();
+		//const auto sleepTime = time.GetTargetMsPerFrame() - elapsedTime; // Time left to reach the target frame rate
+
+
+		const int sleepTime = time.GetTargetMsPerFrame() - static_cast<int>(time.GetDeltaTime());
 
 		if (sleepTime > 0)
 		{
