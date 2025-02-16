@@ -8,12 +8,11 @@ namespace dae
 	{
 
 	public:
-
+		Time();
 		float GetDeltaTime() const;
 
 
 		void Update();
-		void SetStartOfTheFrameTime();
 
 		const float GetFixedTimeStep() const { return m_FixedTimeStep; };
 		const int GetTargetFrameRate() const { return m_TargetFrameRate; };

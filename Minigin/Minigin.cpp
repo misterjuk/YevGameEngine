@@ -53,7 +53,7 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	}
 
 	g_window = SDL_CreateWindow(
-		"Programming 4 assignment",
+		"Yevhenii Ovramenko - Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
 		640,
@@ -94,11 +94,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	float lag = 0.0f;
 
 	const float fixedTimeStep = time.GetFixedTimeStep();
-	time.SetStartOfTheFrameTime();
 
 	while (doContinue)
 	{
-		
+		const auto frameStartTime = std::chrono::high_resolution_clock::now();
+
 		time.Update();
 
 		lag += time.GetDeltaTime();
@@ -113,20 +113,10 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		sceneManager.Update();
 		renderer.Render();
 
-		std::cout << 1 / time.GetDeltaTime() << '\n';
-
-
-		//const auto frameEndTime = std::chrono::high_resolution_clock::now();
-		//const auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(frameEndTime - currentTime).count();
-		//const auto sleepTime = time.GetTargetMsPerFrame() - elapsedTime; // Time left to reach the target frame rate
-
-
-		const int sleepTime = time.GetTargetMsPerFrame() - static_cast<int>(time.GetDeltaTime());
-
-		if (sleepTime > 0)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(sleepTime));
-		}
 		
+		const auto sleep_time = frameStartTime + std::chrono::milliseconds(time.GetTargetMsPerFrame()) - std::chrono::high_resolution_clock::now();
+
+		std::this_thread::sleep_for(sleep_time);
+	
 	}
 }

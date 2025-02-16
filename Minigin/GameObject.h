@@ -1,31 +1,120 @@
 #pragma once
 #include <memory>
-#include "Transform.h"
+#include <vector>
+#include <stdexcept>
+#include "Component.h"
+
 
 namespace dae
 {
 	class Texture2D;
 
 	// todo: this should become final.
-	class GameObject 
+	class GameObject final
 	{
 	public:
 		virtual void Update();
 		virtual void Render() const;
 
-		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
-
 		GameObject() = default;
-		virtual ~GameObject();
+		~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+
+        void MarkForDeletion() { m_markedForDeletion = true; }
+        bool IsMarkedForDeletion() const { return m_markedForDeletion; }
+
+
+        template <typename T, typename... Args>
+        void AddComponent(Args&&... args)
+        {
+            try
+            {
+                m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+            }
+            catch (const std::exception& e)
+            {
+                // Handle exception: log the error, rethrow with a custom message, or take appropriate action.
+                throw std::runtime_error("AddComponent failed: " + std::string(e.what()));
+            }
+        }
+
+        template <typename T>
+        void RemoveComponent()
+        {
+            try
+            {
+                bool found = false;
+
+                for (auto& component : m_Components)
+                {
+                    if (dynamic_cast<T*>(component.get()) != nullptr)
+                    {
+                        component->MarkForDeletion();
+                        found = true;
+                    }
+                }
+
+                // If no component of type T was found, throw an exception
+                if (!found)
+                {
+                    throw std::runtime_error("RemoveComponent failed: Component of requested type not found.");
+                }
+            }
+            catch (const std::exception& e)
+            {
+                // Handle the exception: log or rethrow with additional context
+                throw std::runtime_error("RemoveComponent encountered an error: " + std::string(e.what()));
+            }
+        }
+
+        template <typename T>
+        T* GetComponent() const
+        {
+            try
+            {
+                for (const auto& component : m_Components)
+                {
+                    if (auto castedComponent = dynamic_cast<T*>(component.get()))
+                        return castedComponent;
+                }
+                return nullptr;
+            }
+            catch (const std::exception& e)
+            {
+                // Handle exception: log the error, rethrow with a custom message, or take appropriate action.
+                throw std::runtime_error("GetComponent failed: " + std::string(e.what()));
+            }
+        }
+
+        template <typename T>
+        bool HasComponent() const
+        {
+            try
+            {
+                for (const auto& component : m_Components)
+                {
+                    if (dynamic_cast<T*>(component.get()) != nullptr)
+                        return true;
+                }
+                return false;
+            }
+            catch (const std::exception& e)
+            {
+                // Handle exception: log the error, rethrow with a custom message, or take appropriate action.
+                throw std::runtime_error("HasComponent failed: " + std::string(e.what()));
+            }
+        }
+
 	private:
-		Transform m_transform{};
-		// todo: mmm, every gameobject has a texture? Is that correct?
-		std::shared_ptr<Texture2D> m_texture{};
+	
+        std::vector<std::unique_ptr<Component>> m_Components;
+
+        bool m_markedForDeletion{ false };
 	};
 }
+
+

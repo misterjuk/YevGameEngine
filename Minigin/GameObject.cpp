@@ -3,22 +3,35 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 
-dae::GameObject::~GameObject() = default;
-
-void dae::GameObject::Update(){}
-
-void dae::GameObject::Render() const
+namespace dae 
 {
-	const auto& pos = m_transform.GetPosition();
-	Renderer::GetInstance().RenderTexture(*m_texture, pos.x, pos.y);
+	GameObject::~GameObject() = default;
+
+	void GameObject::Update()
+	{
+
+		for (auto& component : m_Components)
+		{
+			if (!component->IsMarkedForDeletion())
+			{
+				component->Update();
+			}
+		}
+
+		// Remove components that were marked for deletion
+		m_Components.erase(
+			std::remove_if(m_Components.begin(), m_Components.end(),
+				[](const std::unique_ptr<Component>& comp) { return comp->IsMarkedForDeletion(); }),
+			m_Components.end());
+	}
+
+	void GameObject::Render() const
+	{
+		for (const auto& component : m_Components)
+		{
+			component->Render();
+		}
+	}
+
 }
 
-void dae::GameObject::SetTexture(const std::string& filename)
-{
-	m_texture = ResourceManager::GetInstance().LoadTexture(filename);
-}
-
-void dae::GameObject::SetPosition(float x, float y)
-{
-	m_transform.SetPosition(x, y, 0.0f);
-}
