@@ -36,34 +36,54 @@ namespace dae
 
 	void GameObject::SetParent(GameObject* parent, bool keepWorldPosition)
 	{
+        // Check for invalid parent relationships
         if (IsChild(parent) || parent == this || m_Parent == parent)
         {
             return;
         }
 
-        // Remove from the current parent
+        // Remove from current parent if it exists
         if (m_Parent)
         {
             m_Parent->RemoveChild(this);
         }
 
-        if (parent == nullptr)
+        // Set new parent
+        m_Parent = parent;
+
+        // Handle local position based on the keepWorldPosition flag
+        auto transform = GetComponent<TransformComponent>();
+        glm::vec3 newLocalPosition;
+
+        if (keepWorldPosition)
         {
-            m_Parent = nullptr;
-            GetComponent<TransformComponent>()->SetLocalPosition(GetComponent<TransformComponent>()->GetWorldPosition());
+            if (parent)
+            {
+                glm::vec3 newWorldPosition = transform->GetWorldPosition();
+                glm::vec3 parentWorldPosition = parent->GetComponent<TransformComponent>()->GetWorldPosition();
+                newLocalPosition = newWorldPosition - parentWorldPosition;
+            }
+            else
+            {
+                newLocalPosition = transform->GetWorldPosition(); // Keep world position when detaching
+            }
         }
         else
         {
-            if (keepWorldPosition)
-            {
-                GetComponent<TransformComponent>()->SetLocalPosition(
-                    GetComponent<TransformComponent>()->GetWorldPosition() -
-                    parent->GetComponent<TransformComponent>()->GetWorldPosition());
-            }
+                newLocalPosition = glm::vec3(0.0f, 0.0f, 0.0f);       
+        }
 
+        transform->SetLocalPosition(newLocalPosition);
+
+        // Mark as dirty if position was reset or a new parent is assigned
+        if (!keepWorldPosition || parent)
+        {
             SetPositionDirty(true);
+        }
 
-            m_Parent = parent;
+        // Add this object as a child to the new parent if it exists
+        if (parent)
+        {
             m_Parent->AddChild(this);
         }
 	}
