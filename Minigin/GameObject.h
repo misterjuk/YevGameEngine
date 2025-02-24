@@ -31,13 +31,14 @@ namespace dae
         template <typename T, typename... Args>
         void AddComponent(Args&&... args)
         {
+            static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
+
             try
             {
                 m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
             }
             catch (const std::exception& e)
             {
-                // Handle exception: log the error, rethrow with a custom message, or take appropriate action.
                 throw std::runtime_error("AddComponent failed: " + std::string(e.what()));
             }
         }
@@ -109,11 +110,25 @@ namespace dae
             }
         }
 
+
+        void SetParent(GameObject* parent, bool keepWorldPosition);
+
+        GameObject* GetParent() const { return m_Parent; };
+
 	private:
 	
         std::vector<std::unique_ptr<Component>> m_Components;
 
         bool m_markedForDeletion{ false };
+
+
+        GameObject* m_Parent;
+        std::vector<GameObject*> m_Children;
+
+        bool IsChild(GameObject* childToCheck) const;
+        void AddChild(GameObject* child);
+        void RemoveChild(GameObject* child);
+        void SetPositionDirty(const bool isPositionDirty);
 	};
 }
 

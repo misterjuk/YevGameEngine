@@ -1,6 +1,8 @@
 #include "Component.h"
 
-dae::Component::Component(GameObject* owner)
+namespace dae 
 {
-	m_Owner = owner;
+	Component::Component(GameObject* owner) : m_Owner(owner) {}
 }
+
+

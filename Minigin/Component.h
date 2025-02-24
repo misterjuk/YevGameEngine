@@ -22,7 +22,7 @@ namespace dae
 
 
     protected:
-        GameObject* m_Owner;
+       const GameObject* m_Owner;
 
     private:
         bool m_markedForDeletion{ false };

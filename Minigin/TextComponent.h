@@ -17,7 +17,7 @@ namespace dae
 		void Update() override;
 
 		void SetText(const std::string& text);
-	
+
 		TextComponent(GameObject* owner, const std::string& text, const std::shared_ptr<Font>& font);
 		TextComponent(GameObject* owner, const std::shared_ptr<Font>& font);
 		virtual ~TextComponent() = default;
@@ -31,4 +31,4 @@ namespace dae
 		std::string m_text;
 		std::shared_ptr<Font> m_font;
 	};
-}
+};

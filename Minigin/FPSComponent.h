@@ -6,6 +6,7 @@
 namespace dae
 {
     class GameObject;
+    class TextComponent;
 
     class FPSComponent final : public Component
     {
@@ -20,6 +21,8 @@ namespace dae
         float m_TimeBetweenUpdates = 0.07f; // seconds
         std::chrono::steady_clock::time_point m_lastUpdateTime;
         std::string m_text;
+
+        TextComponent* m_TextComponent;
     };
 }
 

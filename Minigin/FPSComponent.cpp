@@ -8,10 +8,14 @@ namespace dae
     FPSComponent::FPSComponent(GameObject* owner)
         : Component(owner)
     {
-
+        if (m_Owner)
+        {
+            m_TextComponent = m_Owner->GetComponent<TextComponent>(); 
+        }
     }
 
     void FPSComponent::Update()
+
     {
         const auto currentTime = std::chrono::steady_clock::now();
         if (const auto elapsedSeconds = std::chrono::duration<float>(currentTime - m_lastUpdateTime).count(); elapsedSeconds >= m_TimeBetweenUpdates)
@@ -20,15 +24,15 @@ namespace dae
 
             std::stringstream ss;
             ss << std::fixed << std::setprecision(1) << 1 / Time::GetInstance().GetDeltaTime();
-
             m_text = "FPS: " + ss.str();
 
-            if (const auto gameObject = m_Owner)
+            if (m_TextComponent) // Use the cached reference
             {
-                if (const auto textComponent = gameObject->GetComponent<TextComponent>(); textComponent != nullptr)
-                {
-                    textComponent->SetText(m_text);
-                }
+                m_TextComponent->SetText(m_text);
+            }
+            else 
+            {
+                return;
             }
         }
     }

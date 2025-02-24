@@ -25,7 +25,7 @@ namespace dae
         {
             if (m_transform != nullptr)
             {
-                Renderer::GetInstance().RenderTexture(*m_texture, m_transform->GetPosition().x, m_transform->GetPosition().y);
+                Renderer::GetInstance().RenderTexture(*m_texture, m_transform->GetWorldPosition().x, m_transform->GetWorldPosition().y);
             }
             else
             {
