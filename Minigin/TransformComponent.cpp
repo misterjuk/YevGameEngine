@@ -34,6 +34,11 @@ namespace dae
 		SetLocalPosition(GetLocalPosition() + offset);
 	}
 
+	void TransformComponent::SetScale(const glm::vec3 scale)
+	{
+		m_scale = scale;
+	}
+
 	glm::vec3 TransformComponent::GetLocalPosition() const
 	{
 		return m_position;

@@ -19,7 +19,8 @@ namespace dae
 
 		void Translate(glm::vec3 const& offset);
 
-
+		glm::vec3 GetScale() { return m_scale; };
+		void SetScale(const glm::vec3 scale);
 		glm::vec3 GetLocalPosition() const;
 
 		glm::vec3 GetWorldPosition();
@@ -33,6 +34,8 @@ namespace dae
 		glm::vec3 m_position{};
 
 		glm::vec3 m_worldPosition{};
+
+		glm::vec3 m_scale{1.0f,1.0f,1.0f};
 	};
 
 };

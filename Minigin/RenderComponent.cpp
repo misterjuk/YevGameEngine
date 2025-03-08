@@ -3,6 +3,7 @@
 #include "ResourceManager.h"
 #include "Renderer.h"
 #include "TransformComponent.h"
+#include "Texture2D.h"
 
 namespace dae 
 {
@@ -25,7 +26,8 @@ namespace dae
         {
             if (m_transform != nullptr)
             {
-                Renderer::GetInstance().RenderTexture(*m_texture, m_transform->GetWorldPosition().x, m_transform->GetWorldPosition().y);
+                Renderer::GetInstance().RenderTexture(*m_texture, m_transform->GetWorldPosition().x, m_transform->GetWorldPosition().y,
+                    m_texture->GetSize().x * m_transform->GetScale().x, m_texture->GetSize().y * m_transform->GetScale().y);
             }
             else
             {
