@@ -117,13 +117,13 @@ namespace dae
 
 	private:
 	
-        std::vector<std::unique_ptr<Component>> m_Components;
+        std::vector<std::unique_ptr<Component>> m_Components{};
 
         bool m_markedForDeletion{ false };
 
 
-        GameObject* m_Parent;
-        std::vector<GameObject*> m_Children;
+        GameObject* m_Parent{};
+        std::vector<GameObject*> m_Children{};
 
         bool IsChild(GameObject* childToCheck) const;
         void AddChild(GameObject* child);
