@@ -11,75 +11,60 @@
 
 namespace dae
 {
-    class MoveUpCommand : public Command
+    class MoveCommand : public Command
     {
     public:
-        MoveUpCommand(GameObject* character) : m_Character(character) {}
+        MoveCommand(GameObject* character, float speed, const glm::vec3& direction)
+            : m_Character(character), m_Speed{ speed }, m_Direction(direction) {
+        }
 
         void Execute() override
         {
-
-            if (m_Character->HasComponent<TransformComponent>())
+            if (m_Character && m_Character->HasComponent<TransformComponent>())
             {
-                m_Character->GetComponent<TransformComponent>()->Translate(glm::vec3(0.0f,-200.0f * Time::GetInstance().GetDeltaTime(), 0.0f));
+                float deltaTime = Time::GetInstance().GetDeltaTime();
+                m_Character->GetComponent<TransformComponent>()->Translate(m_Direction * m_Speed * deltaTime);
             }
         }
 
+        void SetSpeed(float speed) { m_Speed = speed; };
+
     private:
-        GameObject* m_Character;
+        GameObject* m_Character;  
+        glm::vec3 m_Direction;
+        float m_Speed = 200.0f;
     };
 
-    class MoveDownCommand : public Command
+    class MoveUpCommand : public MoveCommand
     {
     public:
-        MoveDownCommand(GameObject* character) : m_Character(character) {}
-
-        void Execute() override
-        {
-
-            if (m_Character->HasComponent<TransformComponent>())
-            {
-                m_Character->GetComponent<TransformComponent>()->Translate(glm::vec3(0.0f, 200.0f * Time::GetInstance().GetDeltaTime(), 0.0f));
-            }
+        MoveUpCommand(GameObject* character, float speed)
+            : MoveCommand(character,speed,glm::vec3(0.0f, -1.0f, 0.0f)) {
         }
-
-    private:
-        GameObject* m_Character;
     };
 
-    class MoveLeftCommand : public Command
+    class MoveDownCommand : public MoveCommand
     {
     public:
-        MoveLeftCommand(GameObject* character) : m_Character(character) {}
-
-        void Execute() override
-        {
-
-            if (m_Character->HasComponent<TransformComponent>())
-            {
-                m_Character->GetComponent<TransformComponent>()->Translate(glm::vec3(-200.0f * Time::GetInstance().GetDeltaTime(), 0.0f, 0.0f));
-            }
+        MoveDownCommand(GameObject* character, float speed)
+            : MoveCommand(character,speed,glm::vec3(0.0f, 1.0f, 0.0f)) {
         }
-
-    private:
-        GameObject* m_Character;
     };
 
-    class MoveRightCommand : public Command
+    class MoveLeftCommand : public MoveCommand
     {
     public:
-        MoveRightCommand(GameObject* character) : m_Character(character) {}
-
-        void Execute() override
-        {
-            if (m_Character->HasComponent<TransformComponent>())
-            {
-                m_Character->GetComponent<TransformComponent>()->Translate(glm::vec3(200.0f * Time::GetInstance().GetDeltaTime(), 0.0f, 0.0f));
-            }
+        MoveLeftCommand(GameObject* character, float speed)
+            : MoveCommand(character,speed,glm::vec3(-1.0f, 0.0f, 0.0f)) {
         }
+    };
 
-    private:
-        GameObject* m_Character;
+    class MoveRightCommand : public MoveCommand
+    {
+    public:
+        MoveRightCommand(GameObject* character, float speed)
+            : MoveCommand(character,speed,glm::vec3(1.0f, 0.0f, 0.0f)) {
+        }
     };
 }
  
