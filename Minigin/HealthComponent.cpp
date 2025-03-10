@@ -15,7 +15,7 @@ void HealthComponent::Notify(IObserver::Event event, yev::GameObject*)
 	if (event == GameEvents::PlayerDamaged)
 	{
 		--m_Health;
-
+	
 		if (m_Health <= 0)
 		{
 			
