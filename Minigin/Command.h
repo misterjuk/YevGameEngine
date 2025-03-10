@@ -2,7 +2,7 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-namespace dae
+namespace yev
 {
 	class Command {
 	public:

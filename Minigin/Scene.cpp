@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-using namespace dae;
+using namespace yev;
 
 unsigned int Scene::m_idCounter = 0;
 

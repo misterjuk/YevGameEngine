@@ -5,7 +5,7 @@
 #include <memory>
 
 
-namespace dae 
+namespace yev 
 {
 
 	class Texture2D;

@@ -5,7 +5,7 @@
 #include "TransformComponent.h"
 #include "Texture2D.h"
 
-namespace dae 
+namespace yev 
 {
     RenderComponent::RenderComponent(GameObject* owner)
         : RenderComponent(owner, nullptr)

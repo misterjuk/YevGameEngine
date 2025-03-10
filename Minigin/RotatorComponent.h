@@ -2,7 +2,7 @@
 #include "Component.h"
 #include <glm.hpp>
 
-namespace dae 
+namespace yev 
 {
 
 	class TransformComponent;

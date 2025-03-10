@@ -9,7 +9,7 @@
 #include "TransformComponent.h"
 #include "Time.h"
 
-namespace dae
+namespace yev
 {
     class MoveCommand : public Command
     {

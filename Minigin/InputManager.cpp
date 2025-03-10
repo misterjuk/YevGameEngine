@@ -3,7 +3,7 @@
 #include <SDL.h>
 #include <algorithm>
 
-namespace dae
+namespace yev
 {
     InputManager::InputManager()
         : m_Gamepad(std::make_unique<Gamepad>())

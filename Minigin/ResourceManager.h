@@ -5,7 +5,7 @@
 #include <map>
 #include "Singleton.h"
 
-namespace dae
+namespace yev
 {
 	class Texture2D;
 	class Font;

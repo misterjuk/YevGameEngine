@@ -3,7 +3,7 @@
 #include "Component.h"
 #include <string>
 
-namespace dae
+namespace yev
 {
     class GameObject;
     class TextComponent;

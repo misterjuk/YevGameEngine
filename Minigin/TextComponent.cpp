@@ -5,7 +5,7 @@
 #include "Font.h"
 #include "Texture2D.h"
 
-namespace dae 
+namespace yev 
 {
 	TextComponent::TextComponent(GameObject* owner, const std::shared_ptr<Font>& font)
 		: TextComponent(owner, "Text", font) 

@@ -8,7 +8,7 @@
 #include "Command.h"
 #include "InputManager.h"
 
-namespace dae
+namespace yev
 {
     class Gamepad
     {

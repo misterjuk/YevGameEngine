@@ -7,7 +7,7 @@
 #include <cmath>   
 #include <stdexcept>
 
-namespace dae 
+namespace yev 
 {
     RotatorComponent::RotatorComponent(GameObject* owner)
         : Component(owner)

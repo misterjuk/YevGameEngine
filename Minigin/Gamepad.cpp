@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <memory>
 
-namespace dae
+namespace yev
 {
     // Constructor initializes the controller state
     Gamepad::Gamepad()

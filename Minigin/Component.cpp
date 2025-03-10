@@ -1,6 +1,6 @@
 #include "Component.h"
 
-namespace dae 
+namespace yev 
 {
 	Component::Component(GameObject* owner) : m_Owner(owner) {}
 }

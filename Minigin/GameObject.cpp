@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "TransformComponent.h"
 
-namespace dae 
+namespace yev 
 {
 	GameObject::~GameObject() = default;
 

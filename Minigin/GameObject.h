@@ -5,7 +5,7 @@
 #include "Component.h"
 
 
-namespace dae
+namespace yev
 {
 	class Texture2D;
 

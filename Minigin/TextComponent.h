@@ -4,7 +4,7 @@
 #include "RenderComponent.h"
 
 
-namespace dae
+namespace yev
 {
 	class Font;
 	class Texture2D;

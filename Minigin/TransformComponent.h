@@ -3,7 +3,7 @@
 #include "Component.h"
 #include <memory>
 
-namespace dae
+namespace yev
 {
 	class GameObject;
 

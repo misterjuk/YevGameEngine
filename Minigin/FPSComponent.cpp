@@ -2,7 +2,7 @@
 #include "Time.h"
 #include "TextComponent.h"
 #include "GameObject.h"
-namespace dae 
+namespace yev 
 
 {
     FPSComponent::FPSComponent(GameObject* owner)
