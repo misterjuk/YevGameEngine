@@ -194,6 +194,7 @@
     <ClInclude Include="Gamepad.h" />
     <ClInclude Include="GameEvents.h" />
     <ClInclude Include="HealthComponent.h" />
+    <ClInclude Include="HealthDisplayComponent.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="IObserver.h" />
     <ClInclude Include="Minigin.h" />
@@ -229,6 +230,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Gamepad.cpp" />
     <ClCompile Include="HealthComponent.cpp" />
+    <ClCompile Include="HealthDisplayComponent.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="IObserver.cpp" />
     <ClCompile Include="Main.cpp" />

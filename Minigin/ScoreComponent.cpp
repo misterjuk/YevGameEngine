@@ -3,6 +3,7 @@
 #include <iostream>
 #include "GameObject.h"
 #include "TextComponent.h"
+#include "GameEvents.h"
 
 ScoreComponent::ScoreComponent(yev::GameObject* ownerObjectPtr, yev::TextComponent* textComponent)
     : yev::Component(ownerObjectPtr), m_currentScore(0), m_highScore(0), m_ScoreText{ textComponent }
@@ -49,8 +50,9 @@ void ScoreComponent::LoadHighScore()
     }
 }
 
-void ScoreComponent::Notify(Event event, yev::GameObject* actor)
+void ScoreComponent::Notify(Event event, yev::GameObject*)
 {
+	if (event == GameEvents::PlayerScored)
 	AddScore(10);
 }
 

@@ -18,6 +18,8 @@ public:
 	HealthComponent& operator=(HealthComponent&& other) = delete;
 
 	void Notify(IObserver::Event event, yev::GameObject* actor) override;
+
+	int GetHealth() const { return m_Health; }
 private:
 
 	int m_Health{ 3 };
