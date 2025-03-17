@@ -9,6 +9,16 @@ namespace yev
     class Subject
     {
     public:
+
+        ~Subject()
+        {
+            for (auto observer : m_Observers)
+            {
+                RemoveObserver(observer);
+            }
+            m_Observers.clear();
+        }
+
         void AddObserver(IObserver* observer)
         {
             m_Observers.push_back(observer);

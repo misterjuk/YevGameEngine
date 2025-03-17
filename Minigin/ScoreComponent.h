@@ -5,6 +5,7 @@
 #include "Component.h"
 #include <string>
 #include "IObserver.h"
+#include "Subject.h"
 
 namespace yev
 {
@@ -13,10 +14,10 @@ namespace yev
 }
 
 //maybe inherit from textcomponent
-class ScoreComponent final : public yev::Component, public yev::IObserver
+class ScoreComponent final : public yev::Component, public yev::IObserver, public yev::Subject
 {
 public:
-    ScoreComponent(yev::GameObject* ownerObjectPtr, yev::TextComponent* textComponent);
+    ScoreComponent(yev::GameObject* ownerObjectPtr);
     ~ScoreComponent() = default;
 
     ScoreComponent(const ScoreComponent&) = delete;
@@ -46,7 +47,7 @@ private:
     // High score loaded from the file
     int m_highScore;
 
-    yev::TextComponent* m_ScoreText{ nullptr };
+ 
     // Method to update high score if the current score is higher
     void UpdateHighScore();
 };

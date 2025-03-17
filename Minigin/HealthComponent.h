@@ -3,9 +3,10 @@
 
 #include "IObserver.h"
 #include "Component.h"
+#include "Subject.h"
 
 class GameObject;
-class HealthComponent final : public yev::IObserver, public yev::Component
+class HealthComponent final : public yev::IObserver, public yev::Component, public yev::Subject
 {
 public:
 

@@ -30,10 +30,10 @@ void yev::Renderer::Init(SDL_Window* window)
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
 
-	IMGUI_CHECKVERSION();
+	/*IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui_ImplSDL2_InitForOpenGL(window, SDL_GL_GetCurrentContext());
-	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplOpenGL3_Init();*/
 }
 
 void yev::Renderer::Render() const
@@ -67,9 +67,9 @@ void yev::Renderer::Render() const
 void yev::Renderer::Destroy()
 {
 
-	ImGui_ImplOpenGL3_Shutdown();
+	/*ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
+	ImGui::DestroyContext();*/
 
 
 	if (m_renderer != nullptr)

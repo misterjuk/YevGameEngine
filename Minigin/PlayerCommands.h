@@ -8,6 +8,8 @@
 #include "GameObject.h"
 #include "TransformComponent.h"
 #include "Time.h"
+#include "Subject.h"
+#include "GameEvents.h"
 
 namespace yev
 {
@@ -65,6 +67,37 @@ namespace yev
         MoveRightCommand(GameObject* character, float speed)
             : MoveCommand(character,speed,glm::vec3(1.0f, 0.0f, 0.0f)) {
         }
+    };
+
+
+    class ApplyDamageCommand : public Command, public Subject
+    {
+    public:
+        ApplyDamageCommand(GameObject* character) : m_Character(character) {}
+
+        void Execute() override
+        {
+			NotifyObservers(GameEvents::PlayerDamaged, m_Character);
+        }
+
+    private:
+        GameObject* m_Character;
+    };
+
+
+
+    class ApplyScoreCommand : public Command, public Subject
+    {
+    public:
+        ApplyScoreCommand(GameObject* character) : m_Character(character) {}
+
+        void Execute() override
+        {
+            NotifyObservers(GameEvents::PlayerScored, m_Character);
+        }
+
+    private:
+        GameObject* m_Character;
     };
 }
  

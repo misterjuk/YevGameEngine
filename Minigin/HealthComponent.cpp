@@ -10,11 +10,13 @@ HealthComponent::HealthComponent(yev::GameObject* owner)
 
 
 
-void HealthComponent::Notify(IObserver::Event event, yev::GameObject*)
+void HealthComponent::Notify(IObserver::Event event, yev::GameObject* gameObject)
 {
 	if (event == GameEvents::PlayerDamaged)
 	{
 		--m_Health;
+
+		NotifyObservers(GameEvents::PlayerDamaged, gameObject);
 	
 		if (m_Health <= 0)
 		{
