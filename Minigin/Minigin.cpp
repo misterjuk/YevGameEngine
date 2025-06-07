@@ -56,8 +56,8 @@ yev::Minigin::Minigin(const std::string &dataPath)
 		"Yevhenii Ovramenko - Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		1000,
+		1000,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 

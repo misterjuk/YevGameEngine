@@ -13,7 +13,7 @@ namespace yev
 	}
 
 	TextComponent::TextComponent(GameObject* owner, const std::string& text, const std::shared_ptr<Font>& font)
-		: RenderComponent(owner, nullptr), m_needsUpdate(true), m_text(text), m_font(font)
+		: RenderComponent(owner), m_needsUpdate(true), m_text(text), m_font(font)
 	{
 	}
 

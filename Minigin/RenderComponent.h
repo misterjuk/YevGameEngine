@@ -19,6 +19,7 @@ namespace yev
 
 		RenderComponent(GameObject* owner);
 		RenderComponent(GameObject* owner, const std::shared_ptr<Texture2D>& texture);
+		RenderComponent(GameObject* owner, const std::string& texturePath);
 		virtual ~RenderComponent() = default;
 
 		void Render() const override;
@@ -26,9 +27,9 @@ namespace yev
 
 	protected:
 		//load texture returns the shared ptr, so probably no need for uniqueptr
-		std::shared_ptr<Texture2D> m_texture;
+		std::shared_ptr<Texture2D> m_texture{};
 
-		TransformComponent* m_transform;
+		TransformComponent* m_transform{};
 
 	};
 

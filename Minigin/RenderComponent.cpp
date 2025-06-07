@@ -8,15 +8,22 @@
 namespace yev 
 {
     RenderComponent::RenderComponent(GameObject* owner)
-        : RenderComponent(owner, nullptr)
+        : Component(owner)
     {
-        
+        m_transform = owner->GetComponent<TransformComponent>();
     }
 
     RenderComponent::RenderComponent(GameObject* owner, const std::shared_ptr<Texture2D>& texture)
         : Component(owner), m_texture(texture)
     {
         m_transform = owner->GetComponent<TransformComponent>();    
+    }
+
+    RenderComponent::RenderComponent(GameObject* owner, const std::string& texturePath)
+        : Component(owner)
+    {
+        m_transform = owner->GetComponent<TransformComponent>();
+        m_texture = ResourceManager::GetInstance().LoadTexture(texturePath);
     }
 
 
@@ -39,5 +46,10 @@ namespace yev
     void RenderComponent::SetTexture(const std::string& filename)
     {
         m_texture = ResourceManager::GetInstance().LoadTexture(filename);
+
+        if(m_transform == nullptr)
+        {
+            m_transform = m_Owner->GetComponent<TransformComponent>();
+		}
     }
 }
