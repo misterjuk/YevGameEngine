@@ -24,6 +24,8 @@ namespace yev
 
 		void Render() const override;
 		void SetTexture(const std::string& filename);
+		
+		const std::shared_ptr<Texture2D>& GetTexture() const { return m_texture; }
 
 	protected:
 		//load texture returns the shared ptr, so probably no need for uniqueptr

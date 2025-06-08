@@ -3,14 +3,13 @@
 #include "Map.h"
 #include <memory>
 
-namespace yev
-{
+
     class TransformComponent;
     
-    class GridMovementComponent final : public Component
+    class GridMovementComponent final : public yev::Component
     {
     public:
-        GridMovementComponent(GameObject* ownerObjectPtr, Map* map);
+        GridMovementComponent(yev::GameObject* ownerObjectPtr, Map* map);
         ~GridMovementComponent() = default;
 
         void Update() override;
@@ -39,9 +38,8 @@ namespace yev
         
         Position m_GridPosition{0, 0};
         Map* m_Map{nullptr};
-        TransformComponent* m_Transform{nullptr};
+        yev::TransformComponent* m_Transform{nullptr};
         float m_InterpolationSpeed{10.0f}; // Controls how fast the visual position catches up to grid position
         bool m_IsMoving{false};
         glm::vec3 m_TargetPosition{0, 0, 0};
     };
-}

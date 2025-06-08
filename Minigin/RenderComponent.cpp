@@ -33,8 +33,11 @@ namespace yev
         {
             if (m_transform != nullptr)
             {
-                Renderer::GetInstance().RenderTexture(*m_texture, m_transform->GetWorldPosition().x, m_transform->GetWorldPosition().y,
-                    m_texture->GetSize().x * m_transform->GetScale().x, m_texture->GetSize().y * m_transform->GetScale().y);
+                const glm::vec3& worldPos = m_transform->GetWorldPosition();
+                Renderer::GetInstance().RenderTexture(*m_texture, 
+                                                     worldPos.x, worldPos.y,
+                                                     m_texture->GetSize().x * m_transform->GetScale().x, 
+                                                     m_texture->GetSize().y * m_transform->GetScale().y);
             }
             else
             {

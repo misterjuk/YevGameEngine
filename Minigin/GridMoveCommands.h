@@ -5,25 +5,24 @@
 #include "GameEvents.h"
 #include "Subject.h"
 
-namespace yev
-{
-    class GridMoveCommand : public Command
+
+    class GridMoveCommand : public yev::Command
     {
     public:
-        GridMoveCommand(GameObject* character)
+        GridMoveCommand(yev::GameObject* character)
             : m_Character(character) {
         }
         
         virtual ~GridMoveCommand() = default;
         
     protected:
-        GameObject* m_Character;
+        yev::GameObject* m_Character;
     };
 
     class GridMoveUpCommand : public GridMoveCommand
     {
     public:
-        GridMoveUpCommand(GameObject* character)
+        GridMoveUpCommand(yev::GameObject* character)
             : GridMoveCommand(character) {
         }
 
@@ -39,7 +38,7 @@ namespace yev
     class GridMoveDownCommand : public GridMoveCommand
     {
     public:
-        GridMoveDownCommand(GameObject* character)
+        GridMoveDownCommand(yev::GameObject* character)
             : GridMoveCommand(character) {
         }
 
@@ -55,7 +54,7 @@ namespace yev
     class GridMoveLeftCommand : public GridMoveCommand
     {
     public:
-        GridMoveLeftCommand(GameObject* character)
+        GridMoveLeftCommand(yev::GameObject* character)
             : GridMoveCommand(character) {
         }
 
@@ -71,7 +70,7 @@ namespace yev
     class GridMoveRightCommand : public GridMoveCommand
     {
     public:
-        GridMoveRightCommand(GameObject* character)
+        GridMoveRightCommand(yev::GameObject* character)
             : GridMoveCommand(character) {
         }
 
@@ -84,10 +83,10 @@ namespace yev
         }
     };
 
-    class DigCommand : public Command
+    class DigCommand : public yev::Command
     {
     public:
-        DigCommand(GameObject* character)
+        DigCommand(yev::GameObject* character)
             : m_Character(character) {
         }
 
@@ -100,6 +99,5 @@ namespace yev
         }
         
     private:
-        GameObject* m_Character;
+        yev::GameObject* m_Character;
     };
-}
