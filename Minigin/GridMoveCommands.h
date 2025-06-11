@@ -4,100 +4,100 @@
 #include "GridMovementComponent.h"
 #include "GameEvents.h"
 #include "Subject.h"
+#include "Time.h"
 
+class GridMoveCommand : public yev::Command
+{
+public:
+    GridMoveCommand(yev::GameObject* character)
+        : m_Character(character) {
+    }
+    
+    virtual ~GridMoveCommand() = default;
+    
+protected:
+    yev::GameObject* m_Character;
+};
 
-    class GridMoveCommand : public yev::Command
+class GridMoveUpCommand : public GridMoveCommand
+{
+public:
+    GridMoveUpCommand(yev::GameObject* character)
+        : GridMoveCommand(character) {
+    }
+
+    void Execute() override
     {
-    public:
-        GridMoveCommand(yev::GameObject* character)
-            : m_Character(character) {
-        }
-        
-        virtual ~GridMoveCommand() = default;
-        
-    protected:
-        yev::GameObject* m_Character;
-    };
-
-    class GridMoveUpCommand : public GridMoveCommand
-    {
-    public:
-        GridMoveUpCommand(yev::GameObject* character)
-            : GridMoveCommand(character) {
-        }
-
-        void Execute() override
+        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
         {
-            if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-            {
-                m_Character->GetComponent<GridMovementComponent>()->MoveUp();
-            }
+            m_Character->GetComponent<GridMovementComponent>()->MoveUp();
         }
-    };
+    }
+};
 
-    class GridMoveDownCommand : public GridMoveCommand
+class GridMoveDownCommand : public GridMoveCommand
+{
+public:
+    GridMoveDownCommand(yev::GameObject* character)
+        : GridMoveCommand(character) {
+    }
+
+    void Execute() override
     {
-    public:
-        GridMoveDownCommand(yev::GameObject* character)
-            : GridMoveCommand(character) {
-        }
-
-        void Execute() override
+        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
         {
-            if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-            {
-                m_Character->GetComponent<GridMovementComponent>()->MoveDown();
-            }
+           m_Character->GetComponent<GridMovementComponent>()->MoveDown();
         }
-    };
+    }
+};
 
-    class GridMoveLeftCommand : public GridMoveCommand
+class GridMoveLeftCommand : public GridMoveCommand
+{
+public:
+    GridMoveLeftCommand(yev::GameObject* character)
+        : GridMoveCommand(character) {
+    }
+
+    void Execute() override
     {
-    public:
-        GridMoveLeftCommand(yev::GameObject* character)
-            : GridMoveCommand(character) {
-        }
-
-        void Execute() override
+        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
         {
-            if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-            {
-                m_Character->GetComponent<GridMovementComponent>()->MoveLeft();
-            }
+            m_Character->GetComponent<GridMovementComponent>()->MoveLeft();
         }
-    };
+    }
+};
 
-    class GridMoveRightCommand : public GridMoveCommand
+class GridMoveRightCommand : public GridMoveCommand
+{
+public:
+    GridMoveRightCommand(yev::GameObject* character)
+        : GridMoveCommand(character) {
+    }
+
+    void Execute() override
     {
-    public:
-        GridMoveRightCommand(yev::GameObject* character)
-            : GridMoveCommand(character) {
-        }
-
-        void Execute() override
+        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
         {
-            if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-            {
-                m_Character->GetComponent<GridMovementComponent>()->MoveRight();
-            }
+            m_Character->GetComponent<GridMovementComponent>()->MoveRight();
         }
-    };
+    }
+};
 
-    class DigCommand : public yev::Command
+class DigCommand : public yev::Command
+{
+public:
+    DigCommand(yev::GameObject* character)
+        : m_Character(character) {
+    }
+
+    void Execute() override
     {
-    public:
-        DigCommand(yev::GameObject* character)
-            : m_Character(character) {
-        }
-
-        void Execute() override
+        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
         {
-            if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-            {
-                m_Character->GetComponent<GridMovementComponent>()->DigAtCurrentPosition();
-            }
+            m_Character->GetComponent<GridMovementComponent>()->DigAtCurrentPosition();
         }
-        
-    private:
-        yev::GameObject* m_Character;
-    };
+    }
+    
+private:
+    yev::GameObject* m_Character;
+};

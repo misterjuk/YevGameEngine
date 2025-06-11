@@ -20,9 +20,9 @@ namespace yev
         void MarkForDeletion() { m_markedForDeletion = true; }
         bool IsMarkedForDeletion() const { return m_markedForDeletion; }
 
-
+		GameObject* GetOwner() const { return m_Owner; }
     protected:
-       const GameObject* m_Owner;
+        GameObject* m_Owner;
 
     private:
         bool m_markedForDeletion{ false };

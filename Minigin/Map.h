@@ -1,16 +1,19 @@
 #pragma once
 #include "Component.h"
+#include "Position.h"
 #include <vector>
 #include <string>
 #include <memory>
-
+#include <functional>
 #include <glm.hpp> 
 
+// Forward declarations
 namespace yev
 {
     class Texture2D;
     class GameObject;
     class TransformComponent;
+    class Scene;
 }
 
 enum class TileType
@@ -22,15 +25,7 @@ enum class TileType
     EnemySpawn
 };
 
-struct Position
-{
-    int x;
-    int y;
-    bool operator==(const Position& other) const
-    {
-        return x == other.x && y == other.y;
-    }
-};
+class Enemy;
 
 class Map final : public yev::Component
 {
@@ -60,6 +55,10 @@ public:
     Position GetPlayerSpawnPosition() const;
     std::vector<Position> GetEnemySpawnPositions() const;
 
+    // New methods for enemy creation and management
+    void SpawnEnemies(yev::Scene& scene);
+    std::unique_ptr<yev::GameObject> CreateEnemyAt(const Position& position, int enemyType = 0);
+
     // Get world position from grid position
     glm::vec3 GridToWorldPosition(const Position& gridPos) const;
     // Get grid position from world position
@@ -76,8 +75,11 @@ private:
 
     // Textures for different tile types
     const std::string m_TextureEarthPath{"Earth.png"};
-    const std::string m_TextureRockPath{ "Earth2.png" };
-
+    const std::string m_TextureRockPath{"Earth2.png"};
+    
+    // Textures for enemies
+    const std::string m_TexturePookaPath{"Enemy.png"};
+    const std::string m_TextureFygarPath{"Enemy2.png"};
 
     // Components used for rendering
     std::unique_ptr<yev::GameObject> m_EarthObj{ nullptr };

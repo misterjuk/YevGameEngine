@@ -29,7 +29,7 @@ namespace yev
             m_Observers.erase(std::remove(m_Observers.begin(), m_Observers.end(), observer), m_Observers.end());
         }
 
-        void NotifyObservers(IObserver::Event event, GameObject* actor)
+        void NotifyObservers(IObserver::Event event, GameObject* actor) 
         {
             for (IObserver* observer : m_Observers)
             {

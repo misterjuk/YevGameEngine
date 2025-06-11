@@ -43,8 +43,11 @@ void Scene::Update()
         m_objects.end());
 }
 
+//TODO recalculating z coord every frame is bad should change it
 void Scene::Render() const
 {
+
+   
     // Create a sorted copy of object pointers for rendering based on z-coordinate
     std::vector<GameObject*> sortedObjects;
     sortedObjects.reserve(m_objects.size());
@@ -53,6 +56,7 @@ void Scene::Render() const
     {
         sortedObjects.push_back(object.get());
     }
+    
     
     // Sort objects by z-coordinate (ascending order)
     // Objects with smaller z will be rendered first, larger z will be rendered later (on top)
