@@ -83,21 +83,3 @@ public:
     }
 };
 
-class DigCommand : public yev::Command
-{
-public:
-    DigCommand(yev::GameObject* character)
-        : m_Character(character) {
-    }
-
-    void Execute() override
-    {
-        if (m_Character && m_Character->HasComponent<GridMovementComponent>())
-        {
-            m_Character->GetComponent<GridMovementComponent>()->DigAtCurrentPosition();
-        }
-    }
-    
-private:
-    yev::GameObject* m_Character;
-};

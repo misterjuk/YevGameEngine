@@ -7,7 +7,7 @@
 #include <functional>
 #include <glm.hpp> 
 
-// Forward declarations
+
 namespace yev
 {
     class Texture2D;
@@ -55,16 +55,16 @@ public:
     Position GetPlayerSpawnPosition() const;
     std::vector<Position> GetEnemySpawnPositions() const;
 
-    // New methods for enemy creation and management
+
     void SpawnEnemies(yev::Scene& scene);
     std::unique_ptr<yev::GameObject> CreateEnemyAt(const Position& position, int enemyType = 0);
 
-    // Get world position from grid position
+    void SpawnPlayers(yev::Scene& scene);
+    std::unique_ptr<yev::GameObject> CreatePlayerAt(const Position& position);
+
     glm::vec3 GridToWorldPosition(const Position& gridPos) const;
-    // Get grid position from world position
     Position WorldToGridPosition(const glm::vec3& worldPos) const;
 
-    // Rendering
     void Render() const override;
 
 private:
@@ -73,15 +73,15 @@ private:
     int m_Height;
     int m_TileSize;
 
-    // Textures for different tile types
+
     const std::string m_TextureEarthPath{"Earth.png"};
     const std::string m_TextureRockPath{"Earth2.png"};
     
-    // Textures for enemies
     const std::string m_TexturePookaPath{"Enemy.png"};
-    const std::string m_TextureFygarPath{"Enemy2.png"};
+    const std::string m_TextureFygarPath{ "Enemy2.png" };
 
-    // Components used for rendering
+    const std::string m_TexturePlayerPath{ "Player.png" };
+
     std::unique_ptr<yev::GameObject> m_EarthObj{ nullptr };
     std::unique_ptr<yev::GameObject> m_RockObj{ nullptr };
 };

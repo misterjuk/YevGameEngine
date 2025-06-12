@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "GridMovementComponent.h"
 #include "Scene.h"
+#include "Player.h"
 
 Map::Map(yev::GameObject* ownerObjectPtr)
     : yev::Component(ownerObjectPtr),
@@ -169,10 +170,8 @@ void Map::SpawnEnemies(yev::Scene& scene)
         // Alternate between enemy types
         int enemyType = enemyCounter % 2;
         
-        // Create and configure the enemy
         auto enemy = CreateEnemyAt(position, enemyType);
-        
-        // Add to scene
+
         scene.Add(std::move(enemy));
         enemyCounter++;
     }
@@ -182,34 +181,61 @@ void Map::SpawnEnemies(yev::Scene& scene)
 
 std::unique_ptr<yev::GameObject> Map::CreateEnemyAt(const Position& position, int enemyType)
 {
-    // Create new GameObject for enemy
     auto enemyObj = std::make_unique<yev::GameObject>();
     
-    // Add necessary components
     enemyObj->AddComponent<yev::TransformComponent>(enemyObj.get());
     enemyObj->GetComponent<yev::TransformComponent>()->SetScale(glm::vec3(3.0f, 3.0f, 1.0f));
     
-    // Add render component with appropriate texture
     enemyObj->AddComponent<yev::RenderComponent>(enemyObj.get());
+
+    enemyObj->AddComponent<GridMovementComponent>(enemyObj.get(), this, false);
+    enemyObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
     
     if (enemyType == 0) // Pooka
     {
         enemyObj->GetComponent<yev::RenderComponent>()->SetTexture(m_TexturePookaPath);
-        // Add Enemy component
         enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Pooka);
     }
     else // Fygar
     {
         enemyObj->GetComponent<yev::RenderComponent>()->SetTexture(m_TextureFygarPath);
-        // Add Enemy component
         enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Fygar);
     }
-    
-    // Add GridMovementComponent and set position
-    enemyObj->AddComponent<GridMovementComponent>(enemyObj.get(), this);
-    enemyObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
-    
+     
     return enemyObj;
+}
+
+//can be modified to spawn multiple players if needed
+void Map::SpawnPlayers(yev::Scene& scene)
+{
+    Position playerPosition = GetPlayerSpawnPosition();
+ 
+    auto player = CreatePlayerAt(playerPosition);
+
+    scene.Add(std::move(player));
+
+    std::cout << "Spawned Player" << std::endl;
+}
+
+std::unique_ptr<yev::GameObject> Map::CreatePlayerAt(const Position& position)
+{
+    auto playerObj = std::make_unique<yev::GameObject>();
+
+    playerObj->AddComponent<yev::TransformComponent>(playerObj.get());
+    playerObj->GetComponent<yev::TransformComponent>()->SetScale(glm::vec3(3.0f, 3.0f, 1.0f));
+
+   
+    playerObj->AddComponent<yev::RenderComponent>(playerObj.get());
+    playerObj->GetComponent<yev::RenderComponent>()->SetTexture(m_TexturePlayerPath);
+
+    playerObj->AddComponent<GridMovementComponent>(playerObj.get(), this, true);
+    playerObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
+
+    playerObj->AddComponent<Player>(playerObj.get(), this);
+
+
+
+    return playerObj;
 }
 
 glm::vec3 Map::GridToWorldPosition(const Position& gridPos) const

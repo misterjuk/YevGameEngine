@@ -6,32 +6,26 @@ namespace yev { class GameObject; }
 class Map;
 class Enemy;
 
-// Abstract base class for all enemy states
 class EnemyState
 {
 public:
     virtual ~EnemyState() = default;
 
-    // Core state functionality
     virtual void Enter(Enemy* enemy) = 0;
     virtual void Update(Enemy* enemy, float deltaTime) = 0;
     virtual void Exit(Enemy* enemy) = 0;
 
-    // Handle events that might trigger state transitions
     virtual std::unique_ptr<EnemyState> HandlePlayerSeen(Enemy* enemy);
     virtual std::unique_ptr<EnemyState> HandlePlayerLost(Enemy* enemy);
     virtual std::unique_ptr<EnemyState> HandleDamaged(Enemy* enemy);
     virtual std::unique_ptr<EnemyState> HandleStateExpired(Enemy* enemy);
 
 protected:
-    // Helper for derived states to check if player is in line of sight
     bool IsPlayerInLineOfSight(Enemy* enemy, Map* map, int visionRange) const;
     
-    // Helper to find next valid direction for movement
     GridMovementComponent::MovementDirection FindValidDirection(Enemy* enemy, Map* map) const;
 };
 
-// Concrete enemy states
 class EnemyIdleState : public EnemyState
 {
 public:

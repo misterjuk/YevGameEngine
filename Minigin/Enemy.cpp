@@ -23,7 +23,7 @@ Enemy::Enemy(yev::GameObject* ownerObjectPtr, Map* map, EnemyType type)
         // Add grid movement component if missing
         if (!ownerObjectPtr->HasComponent<GridMovementComponent>())
         {
-            ownerObjectPtr->AddComponent<GridMovementComponent>(ownerObjectPtr, map);
+            ownerObjectPtr->AddComponent<GridMovementComponent>(ownerObjectPtr, map, false);
         }
     }
     

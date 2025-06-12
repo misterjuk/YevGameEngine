@@ -23,7 +23,7 @@ public:
         None
     };
 
-    GridMovementComponent(yev::GameObject* ownerObjectPtr, Map* map);
+    GridMovementComponent(yev::GameObject* ownerObjectPtr, Map* map, bool isPlayer);
     ~GridMovementComponent() = default;
 
     void UpdatePosition();
@@ -58,4 +58,6 @@ private:
     glm::vec3 m_TargetPosition{ 0, 0, 0 };
     bool m_CanRotate{ true };
     bool m_IsWalkingOnXAxis{ true };
+
+    bool m_IsPlayer{ false };
 };

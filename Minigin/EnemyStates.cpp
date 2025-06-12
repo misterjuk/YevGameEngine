@@ -64,29 +64,27 @@ GridMovementComponent::MovementDirection EnemyState::FindValidDirection(Enemy* e
         GridMovementComponent::MovementDirection::Left,
         GridMovementComponent::MovementDirection::Right
     };
+
+	int randomIndex = rand() % 4; // Randomly select a direction to start with
     
-    for (auto dir : directions)
+ 
+    int newX = pos.x;
+    int newY = pos.y;
+    
+    switch (directions[randomIndex])
     {
-        int newX = pos.x;
-        int newY = pos.y;
-        
-        switch (dir)
-        {
-        case GridMovementComponent::MovementDirection::Up:
-            newY--; break;
-        case GridMovementComponent::MovementDirection::Down:
-            newY++; break;
-        case GridMovementComponent::MovementDirection::Left:
-            newX--; break;
-        case GridMovementComponent::MovementDirection::Right:
-            newX++; break;
-        default:
-            continue;
-        }
-        
-        if (movement->CanMoveToPosition(newX, newY))
-            return dir;
+    case GridMovementComponent::MovementDirection::Up:
+        newY--; break;
+    case GridMovementComponent::MovementDirection::Down:
+        newY++; break;
+    case GridMovementComponent::MovementDirection::Left:
+        newX--; break;
+    case GridMovementComponent::MovementDirection::Right:
+        newX++; break;
     }
+    
+    if (movement->CanMoveToPosition(newX, newY))
+        return directions[randomIndex];
     
     return GridMovementComponent::MovementDirection::None;
 }
