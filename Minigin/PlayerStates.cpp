@@ -6,6 +6,7 @@
 #include "RenderComponent.h"
 #include "Time.h"
 #include <iostream>
+#include "Enemy.h"
 
 // Base PlayerState methods
 std::unique_ptr<PlayerState> PlayerState::HandleMovementInput(Player*, GridMovementComponent::MovementDirection)
@@ -244,10 +245,10 @@ std::unique_ptr<PlayerState> PlayerDiggingState::HandleStateExpired(Player*)
     return std::make_unique<PlayerIdleState>();
 }
 
-// PlayerAttackingState implementation
 void PlayerAttackingState::Enter(Player* player)
 {
     m_AttackTimer = 0.0f;
+    m_HasHitEnemy = false;
     
     // Visual indicator for attack state
     if (auto owner = player->GetOwner())
@@ -259,14 +260,49 @@ void PlayerAttackingState::Enter(Player* player)
         }
     }
     
-    // In a complete implementation, this would create a pump attack object
-    // or check for enemies in front to damage
+    FindAndAttackEnemyInFront(player);
 }
 
 void PlayerAttackingState::Update(Player* player, float deltaTime)
 {
-    m_AttackTimer += deltaTime;
     
+
+    // Apply continuous damage to enemy if hit (simulates pumping)
+    if (m_HasHitEnemy && m_TargetEnemy)
+    {
+        m_AttackTimer += deltaTime;
+        // Apply damage every 0.3 seconds to simulate pumping action
+        if (m_AttackTimer > 0.3f)
+        {
+            m_AttackTimer = 0.0f;
+            
+            bool result = m_TargetEnemy->TakeDamage(1);
+
+           if(!result)
+            {
+                // If the enemy is dead, reset the target
+                m_HasHitEnemy = false;
+                m_TargetEnemy = nullptr;
+
+                auto newState = HandleStateExpired(player);
+                if (newState)
+                    player->ChangeState(std::move(newState));
+                return;
+            }
+            // If the player has a score component, reward player for each pump
+         /*   if (auto scoreComp = player->GetOwner()->GetComponent<ScoreComponent>())
+            {
+                scoreComp->AddScore(10);
+            }*/
+        }
+    }
+    else {
+        auto newState = HandleStateExpired(player);
+        if (newState)
+            player->ChangeState(std::move(newState));
+        return;
+    }
+
     // Return to idle after attack completes
     if (m_AttackTimer >= m_AttackDuration)
     {
@@ -278,12 +314,127 @@ void PlayerAttackingState::Update(Player* player, float deltaTime)
 
 void PlayerAttackingState::Exit(Player*)
 {
-    // Clean up attack state resources if needed
+    m_TargetEnemy = nullptr;
 }
 
 std::unique_ptr<PlayerState> PlayerAttackingState::HandleStateExpired(Player*)
 {
     return std::make_unique<PlayerIdleState>();
+}
+
+void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
+{
+    if (!player)
+        return;
+
+    auto movement = player->GetMovement();
+    if (!movement)
+        return;
+
+    // Get player's position and direction
+    Position playerPos = movement->GetGridPosition();
+    GridMovementComponent::MovementDirection playerDir = movement->GetDirection();
+
+    // Skip if the player doesn't have a direction (shouldn't happen, but safety check)
+    if (playerDir == GridMovementComponent::MovementDirection::None)
+        return;
+
+    Map* map = player->GetMap();
+    if (!map)
+        return;
+
+    // Get all enemies from the map registry
+    const std::vector<Enemy*>& enemies = map->GetAllEnemies();
+
+    // Check if any enemies are in the attack direction
+    for (Enemy* enemy : enemies)
+    {
+        if (enemy && enemy->IsAlive())
+        {
+            auto enemyMovement = enemy->GetMovement();
+            if (enemyMovement)
+            {
+                Position enemyPos = enemyMovement->GetGridPosition();
+
+                // Check if enemy is in the attack direction
+                bool inAttackDirection = false;
+                int distance = 0;
+
+                switch (playerDir)
+                {
+                case GridMovementComponent::MovementDirection::Up:
+                    inAttackDirection = (enemyPos.x == playerPos.x && enemyPos.y < playerPos.y);
+                    distance = playerPos.y - enemyPos.y;
+                    break;
+                case GridMovementComponent::MovementDirection::Down:
+                    inAttackDirection = (enemyPos.x == playerPos.x && enemyPos.y > playerPos.y);
+                    distance = enemyPos.y - playerPos.y;
+                    break;
+                case GridMovementComponent::MovementDirection::Left:
+                    inAttackDirection = (enemyPos.y == playerPos.y && enemyPos.x < playerPos.x);
+                    distance = playerPos.x - enemyPos.x;
+                    break;
+                case GridMovementComponent::MovementDirection::Right:
+                    inAttackDirection = (enemyPos.y == playerPos.y && enemyPos.x > playerPos.x);
+                    distance = enemyPos.x - playerPos.x;
+                    break;
+                default:
+                    break;
+                }
+
+                if (inAttackDirection && distance <= m_AttackRange)
+                {
+                    // Check if there are any walls between player and enemy
+                    bool pathClear = true;
+                    for (int i = 1; i < distance; i++)
+                    {
+                        Position checkPos = playerPos;
+                        switch (playerDir)
+                        {
+                        case GridMovementComponent::MovementDirection::Up:
+                            checkPos.y -= i;
+                            break;
+                        case GridMovementComponent::MovementDirection::Down:
+                            checkPos.y += i;
+                            break;
+                        case GridMovementComponent::MovementDirection::Left:
+                            checkPos.x -= i;
+                            break;
+                        case GridMovementComponent::MovementDirection::Right:
+                            checkPos.x += i;
+                            break;
+                        default:
+                            break;
+                        }
+
+                        if (map->GetTileAt(checkPos.x, checkPos.y) == TileType::Rock)
+                        {
+                            pathClear = false;
+                            break;
+                        }
+                    }
+
+                    if (pathClear)
+                    {
+                        // Found an enemy to attack!
+                       // enemy->TakeDamage(1);
+                        enemy->Stun(); // Stun the enemy immediately
+
+                        m_HasHitEnemy = true;
+                        m_TargetEnemy = enemy; // Store reference for continuous damage
+
+                        // If the player has a score component, reward player for hit
+                        /*if (auto scoreComp = player->GetOwner()->GetComponent<ScoreComponent>())
+                        {
+                            scoreComp->AddScore(50);
+                        }*/
+
+                        return; // Stop after hitting the first enemy
+                    }
+                }
+            }
+        }
+    }
 }
 
 // PlayerDyingState implementation
@@ -303,7 +454,7 @@ void PlayerDyingState::Enter(Player* player)
     }
 }
 
-void PlayerDyingState::Update(Player*, float deltaTime)
+void PlayerDyingState::Update(Player* player, float deltaTime)
 {
     if (m_AnimationComplete)
         return;
@@ -315,7 +466,10 @@ void PlayerDyingState::Update(Player*, float deltaTime)
     {
         m_AnimationComplete = true;
         
-        // In a real game, this would trigger a game over or respawn sequence
+        if (auto owner = player->GetOwner())
+        {
+            owner->MarkForDeletion();
+        }
     }
 }
 

@@ -29,6 +29,19 @@ Player::Player(yev::GameObject* ownerObjectPtr, Map* map)
     
     InitializePlayer();
     BindPlayerInput();
+
+    if (m_Map)
+    {
+        m_Map->RegisterPlayer(this);
+    }
+}
+
+Player::~Player()
+{
+    if (m_Map)
+    {
+        m_Map->UnregisterPlayer(this);
+    }
 }
 
 void Player::Update()
@@ -71,6 +84,8 @@ void Player::BindPlayerInput()
     inputManager.BindKeyboardCommand(SDLK_d, yev::InputState::Held, std::make_unique<PlayerMoveRightCommand>(m_Owner));
     inputManager.BindKeyboardCommand(SDLK_w, yev::InputState::Held, std::make_unique<PlayerMoveUpCommand>(m_Owner));
     inputManager.BindKeyboardCommand(SDLK_s, yev::InputState::Held, std::make_unique<PlayerMoveDownCommand>(m_Owner));
+
+    inputManager.BindKeyboardCommand(SDLK_f, yev::InputState::Pressed,std::make_unique<PlayerAttackCommand>(this->GetOwner()));
 }
 
 void Player::HandleMovementInput(GridMovementComponent::MovementDirection direction)

@@ -34,6 +34,14 @@ Map::Map(yev::GameObject* ownerObjectPtr)
     m_RockObj->SetParent(ownerObjectPtr, true);
 }
 
+Enemy::~Enemy()
+{
+    if (m_Map)
+    {
+        m_Map->UnregisterEnemy(this);
+    }
+}
+
 bool Map::LoadFromFile(const std::string& filePath)
 {
     std::ifstream file(filePath);
@@ -191,15 +199,22 @@ std::unique_ptr<yev::GameObject> Map::CreateEnemyAt(const Position& position, in
     enemyObj->AddComponent<GridMovementComponent>(enemyObj.get(), this, false);
     enemyObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
     
+
+    Enemy* enemyComponent = nullptr;
     if (enemyType == 0) // Pooka
     {
         enemyObj->GetComponent<yev::RenderComponent>()->SetTexture(m_TexturePookaPath);
-        enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Pooka);
+        enemyComponent = enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Pooka);
     }
     else // Fygar
     {
         enemyObj->GetComponent<yev::RenderComponent>()->SetTexture(m_TextureFygarPath);
-        enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Fygar);
+        enemyComponent = enemyObj->AddComponent<Enemy>(enemyObj.get(), this, Enemy::EnemyType::Fygar);
+    }
+
+    if (enemyComponent)
+    {
+        RegisterEnemy(enemyComponent);
     }
      
     return enemyObj;
@@ -295,4 +310,156 @@ void Map::Render() const
             }
         }
     }
+}
+
+void Map::RegisterEnemy(Enemy* enemy)
+{
+    if (enemy)
+    {
+        auto it = std::find(m_Enemies.begin(), m_Enemies.end(), enemy);
+        if (it == m_Enemies.end())
+        {
+            m_Enemies.push_back(enemy);
+        }
+    }
+}
+void Map::UnregisterEnemy(Enemy* enemy)
+{
+    if (enemy && !m_Enemies.empty())
+    {
+        auto it = std::find(m_Enemies.begin(), m_Enemies.end(), enemy);
+        if (it != m_Enemies.end())
+        {
+            m_Enemies.erase(it);
+
+            
+            if (m_Enemies.empty())
+            {
+                std::cout << "All enemies defeated! Loading next level..." << std::endl;
+                ClearLevel();
+                LoadNextLevel();
+            }
+        }
+    }
+}
+
+void Map::RegisterPlayer(Player* player)
+{
+    if (player)
+    {
+        auto it = std::find(m_Players.begin(), m_Players.end(), player);
+        if (it == m_Players.end())
+        {
+            m_Players.push_back(player);
+        }
+    }
+}
+
+void Map::UnregisterPlayer(Player* player)
+{
+    if (player && !m_Players.empty())
+    {
+        auto it = std::find(m_Players.begin(), m_Players.end(), player);
+        if (it != m_Players.end())
+        {
+            m_Players.erase(it);
+        }
+    }
+}
+
+void Map::ClearLevel()
+{
+
+    for (auto* enemy : m_Enemies)
+    {
+        if (enemy && enemy->GetOwner())
+        {
+            enemy->GetOwner()->MarkForDeletion();
+        }
+    }
+    // Clear the enemies list
+    m_Enemies.clear();
+
+    for (auto* player : m_Players)
+    {
+        if (player && player->GetOwner())
+        {
+            player->GetOwner()->MarkForDeletion();
+        }
+    }
+
+    m_Players.clear();
+
+    // Clear the tile map
+    for (auto& row : m_Tiles)
+    {
+        row.clear();
+    }
+    m_Tiles.clear();
+
+    // Reset dimensions
+    m_Width = 0;
+    m_Height = 0;
+}
+
+void Map::LoadNextLevel()
+{
+    // Create a new scene for the next level
+    auto& sceneManager = yev::SceneManager::GetInstance();
+    auto& newScene = sceneManager.CreateScene("Level2");
+
+ 
+
+    // Create a map object for the new scene
+    auto mapObject = std::make_unique<yev::GameObject>();
+    mapObject->AddComponent<yev::TransformComponent>(mapObject.get());
+    mapObject->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 0, -5);
+
+    // Create the map component and load Level2.txt
+    auto mapComponent = mapObject->AddComponent<Map>(mapObject.get());
+    bool success = mapComponent->LoadFromFile("../Data/Map.txt");
+
+    if (!success)
+    {
+        std::cerr << "Failed to load next level: " << "Map.txt" << std::endl;
+        return;
+    }
+
+    // Spawn enemies and players in the new scene
+    mapComponent->SpawnEnemies(newScene);
+    mapComponent->SpawnPlayers(newScene);
+
+    // Add UI elements (based on Main.cpp's load function)
+    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+
+    //// Create score display
+    //auto scoreDisplay = std::make_unique<yev::GameObject>();
+    //scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
+    //scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(400, 300, 0);
+    //scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
+    //scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
+
+    //// Create health display
+    //auto healthDisplay = std::make_unique<yev::GameObject>();
+    //healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
+    //healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(400, 400, 0);
+    //healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
+    //healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
+
+    //// Add FPS counter
+    //auto fps = std::make_unique<yev::GameObject>();
+    //fps->AddComponent<yev::TransformComponent>(fps.get());
+    //fps->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 100, 0);
+    //fps->AddComponent<yev::TextComponent>(fps.get(), font);
+    //fps->AddComponent<yev::FPSComponent>(fps.get());
+
+    //// Add all objects to the new scene
+    //newScene.Add(std::move(scoreDisplay));
+    //newScene.Add(std::move(healthDisplay));
+    //newScene.Add(std::move(fps));
+    newScene.Add(std::move(mapObject));
+
+	sceneManager.SetActiveScene(&newScene);
+
+    std::cout << "Level 2 loaded successfully!" << std::endl;
 }

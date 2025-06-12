@@ -8,6 +8,7 @@
 #include <glm.hpp> 
 
 
+
 namespace yev
 {
     class Texture2D;
@@ -26,6 +27,7 @@ enum class TileType
 };
 
 class Enemy;
+class Player;
 
 class Map final : public yev::Component
 {
@@ -67,12 +69,26 @@ public:
 
     void Render() const override;
 
+    void RegisterEnemy(Enemy* enemy);
+    void UnregisterEnemy(Enemy* enemy);
+    const std::vector<Enemy*>& GetAllEnemies() const { return m_Enemies; };
+
+    void RegisterPlayer(Player* player);
+    void UnregisterPlayer(Player* player);
+    const std::vector<Player*>& GetAllPlayers() const { return m_Players; }
+
+
+    void ClearLevel();
+    void LoadNextLevel();
+
 private:
     std::vector<std::vector<TileType>> m_Tiles;
-    int m_Width;
-    int m_Height;
-    int m_TileSize;
+    int m_Width{};
+    int m_Height{};
+    int m_TileSize{64};
 
+    std::vector<Enemy*> m_Enemies;
+    std::vector<Player*> m_Players;
 
     const std::string m_TextureEarthPath{"Earth.png"};
     const std::string m_TextureRockPath{"Earth2.png"};

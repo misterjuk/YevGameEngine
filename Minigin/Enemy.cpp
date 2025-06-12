@@ -33,8 +33,16 @@ Enemy::Enemy(yev::GameObject* ownerObjectPtr, Map* map, EnemyType type)
 void Enemy::Update()
 {
     // Skip update if inactive or no state
-    if (!m_CurrentState || !IsAlive())
+    if (!m_CurrentState)
         return;
+
+    // Only check IsAlive() if not already in DeathState
+    if (!dynamic_cast<EnemyDeathState*>(m_CurrentState.get()) && !IsAlive())
+    {
+        Kill();
+        return;
+    }
+
         
     float deltaTime = yev::Time::GetInstance().GetDeltaTime();
     // Update player detection
@@ -87,18 +95,53 @@ void Enemy::ChangeState(std::unique_ptr<EnemyState> newState)
         m_CurrentState->Enter(this);
 }
 
-void Enemy::TakeDamage(int damage)
+bool Enemy::TakeDamage(int damage)
 {
     m_Health = std::max(0, m_Health - damage);
     
     if (m_Health <= 0)
     {
         Kill();
+        // Notify observers that enemy was damaged
+        return false;
     }
     else
     {
-        // Notify observers that enemy was damaged
-        NotifyObservers(GameEvents::EnemyKilled, GetOwner());
+        switch (m_Type)
+        {
+        case Enemy::EnemyType::Pooka:
+            switch (m_Health)
+            {
+            case 1:
+                m_RenderComponent->SetTexture(m_Pooka1hp);
+                break;
+            case 2:
+                m_RenderComponent->SetTexture(m_Pooka2hp);
+                break;
+
+            default:
+                break;
+            }
+            break;
+        case Enemy::EnemyType::Fygar:
+
+            switch (m_Health)
+            {
+            case 1:
+                m_RenderComponent->SetTexture(m_Fygar1hp);
+                break;
+            case 2:
+                m_RenderComponent->SetTexture(m_Fygar2hp);
+                break;
+
+            default:
+                break;
+            }
+            break;
+        default:
+            break;
+        }
+      
         
         // Handle state change for being damaged
         if (m_CurrentState)
@@ -107,15 +150,17 @@ void Enemy::TakeDamage(int damage)
             if (newState)
                 ChangeState(std::move(newState));
         }
+
+        return true;
     }
 }
 
 void Enemy::Kill()
 {
-    m_Health = 0;
     
     // Notify observers that enemy was killed
     NotifyObservers(GameEvents::EnemyKilled, GetOwner());
+    
     
     // Change to death state
     ChangeState(std::make_unique<EnemyDeathState>());
@@ -145,7 +190,7 @@ void Enemy::InitializeAI()
     }
     else // Pooka
     {
-        m_Health = 2;
+        m_Health = 3;
         m_MoveSpeed = 120.0f;
     }
     

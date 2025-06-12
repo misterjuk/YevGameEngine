@@ -335,8 +335,16 @@ void EnemyDeathState::Enter(Enemy* enemy)
     {
         if (auto render = owner->GetComponent<yev::RenderComponent>())
         {
-            // Change appearance for death state
-            // render->SetTexture("EnemyDeath.png");
+            switch (enemy->GetType())
+            {
+            case Enemy::EnemyType::Pooka:
+
+                render->SetTexture(m_TexturePookaDead);
+				break;
+            case Enemy::EnemyType::Fygar:
+                render->SetTexture(m_TextureFygarDead);
+            break;
+            }
         }
     }
 }
@@ -352,12 +360,9 @@ void EnemyDeathState::Update(Enemy* enemy, float deltaTime)
     {
         m_AnimationComplete = true;
         
-        // In a complete implementation, the enemy would be removed from the game
-        // or recycled into an object pool
         if (auto owner = enemy->GetOwner())
         {
-            // Mark for destruction or disable
-            // owner->SetActive(false);
+            owner->MarkForDeletion();
         }
     }
 }

@@ -5,6 +5,7 @@
 #include "Subject.h"
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace yev
 {
@@ -25,7 +26,7 @@ public:
     };
     
     Enemy(yev::GameObject* ownerObjectPtr, Map* map, EnemyType type = EnemyType::Pooka);
-    ~Enemy() override = default;
+    ~Enemy() override;
 
     // Prevent copying
     Enemy(const Enemy& other) = delete;
@@ -41,7 +42,7 @@ public:
     void ChangeState(std::unique_ptr<EnemyState> newState);
 
     // Event handlers
-    void TakeDamage(int damage = 1);
+    bool TakeDamage(int damage = 1);
     void Kill();
     void Stun();
 
@@ -63,7 +64,7 @@ private:
     yev::RenderComponent* m_RenderComponent{nullptr};
     
     // Core properties
-    int m_Health{2};
+    int m_Health{3};
     float m_MoveSpeed{100.0f};
     float m_VisionRange{5.0f}; // In grid cells
     EnemyType m_Type{EnemyType::Pooka};
@@ -75,6 +76,20 @@ private:
     bool m_PlayerDetected{false};
     float m_PlayerDetectionTimer{0.0f};
     float m_PlayerDetectionInterval{0.5f}; // Check player detection every 0.5 seconds
+
+
+    const std::string m_Pooka{ "Enemy.png" };
+
+    const std::string m_Pooka2hp{ "Enemy/Pooka2hp.png" };
+    const std::string m_Pooka1hp{ "Enemy/Pooka1hp.png" };
+    const std::string m_PookaDead{ "Enemy/PookaDead.png" };
+
+    const std::string m_Fygar{ "Enemy2.png" };
+
+
+    const std::string m_Fygar2hp{ "Enemy/Fygar2hp.png" };
+    const std::string m_Fygar1hp{ "Enemy/Fygar1hp.png" };
+    const std::string m_FygarDead{ "Enemy/FygarDead.png" };
     
     // Initialize AI behavior
     void InitializeAI();

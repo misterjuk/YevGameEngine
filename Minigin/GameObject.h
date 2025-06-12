@@ -28,13 +28,14 @@ namespace yev
 
 
         template <typename T, typename... Args>
-        void AddComponent(Args&&... args)
+        T* AddComponent(Args&&... args)
         {
             static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
             try
             {
-                m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+                auto& componentPtr = m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+                return static_cast<T*>(componentPtr.get());
             }
             catch (const std::exception& e)
             {

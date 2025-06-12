@@ -2,6 +2,7 @@
 #include <memory>
 #include "GridMovementComponent.h"
 #include <string>
+#include "Enemy.h"
 
 // Forward declarations
 namespace yev { 
@@ -10,6 +11,7 @@ namespace yev {
                }
 class Map;  
 class Player;
+
 
 // Abstract base class for all player states
 class PlayerState
@@ -105,9 +107,13 @@ public:
     std::unique_ptr<PlayerState> HandleStateExpired(Player* player) override;
 
 private:
-    float m_AttackTimer{0.0f};
-    float m_AttackDuration{1.0f};
-    float m_AttackRange{3.0f}; // In grid cells
+    void FindAndAttackEnemyInFront(Player* player);
+
+    float m_AttackTimer{ 0.0f };
+    float m_AttackDuration{ 1.0f };
+    float m_AttackRange{ 3.0f }; 
+    bool m_HasHitEnemy{ false };
+    Enemy* m_TargetEnemy{ nullptr };
 };
 
 class PlayerDyingState : public PlayerState

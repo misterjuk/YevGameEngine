@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "GridMovementComponent.h" 
+#include <string>
 
 namespace yev { class GameObject; }
 class Map;
@@ -93,6 +94,9 @@ public:
 
 private:
     float m_DeathTimer{};
-    float m_DeathAnimationDuration{2.0f};
+    float m_DeathAnimationDuration{0.5f};
     bool m_AnimationComplete{false};
+
+	const std::string m_TexturePookaDead{ "Enemy/PookaDead.png" };
+    const std::string m_TextureFygarDead{ "Enemy/FygarDead.png" };
 };

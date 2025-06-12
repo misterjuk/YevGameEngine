@@ -21,7 +21,7 @@ class Player final : public yev::Component, public yev::Subject
 {
 public:
     Player(yev::GameObject* ownerObjectPtr, Map* map);
-    ~Player() override = default;
+    ~Player() override;
 
     // Prevent copying
     Player(const Player& other) = delete;
