@@ -79,13 +79,25 @@ public:
 
 
     void ClearLevel();
+    void LoadLevel(yev::Scene& scene, int levelIndex);
     void LoadNextLevel();
 
 private:
+
+    void CreateUI(yev::Scene& scene);
+
     std::vector<std::vector<TileType>> m_Tiles;
     int m_Width{};
     int m_Height{};
     int m_TileSize{64};
+
+	int m_ThisMapLevelIndex{0};
+
+   
+
+	const std::string m_Level1FilePath{ "../Data/Level1.txt" };
+    const std::string m_Level2FilePath{ "../Data/Level2.txt" };
+    const std::string m_Level3FilePath{ "../Data/Level3.txt" };
 
     std::vector<Enemy*> m_Enemies;
     std::vector<Player*> m_Players;

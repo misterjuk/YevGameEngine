@@ -13,7 +13,8 @@ namespace yev
 		Scene& CreateScene(const std::string& name);
 
 		void SetActiveScene(Scene* scene);
-		Scene* GetActiveScene() const { return m_activeScene; }
+		void SetActiveScene(const std::string& name);
+		Scene& GetActiveScene() const { return *m_activeScene; }
 
 		void Update();
 		void FixedUpdate();

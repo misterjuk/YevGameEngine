@@ -40,7 +40,8 @@ void GridMovementComponent::UpdatePosition()
 
     glm::vec3 directionToTargetPos = m_TargetPosition - currentPos;
 
-   // std::cout << "Current grid x,y: " << currentGridX << ":"<< currentPos.x << "," << currentGridY <<  ":" << currentPos.y << std::endl;
+    if(m_IsPlayer)
+    std::cout << "Current grid x,y: " << currentGridX << ":"<< currentPos.x << "," << currentGridY <<  ":" << currentPos.y << std::endl;
 
     float deltaTime = yev::Time::GetInstance().GetDeltaTime();
     float moveAmount = m_MovementSpeed * deltaTime;

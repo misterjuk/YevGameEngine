@@ -7,18 +7,23 @@
 #include "GameObject.h"
 #include "RenderComponent.h"
 #include "TransformComponent.h"
-#include "Enemy.h"
 #include "GridMovementComponent.h"
+
 #include "Scene.h"
 #include "Player.h"
+#include "Enemy.h"
+
+#include "TextComponent.h"
+#include "ScoreDisplayComponent.h"
+#include "HealthDisplayComponent.h"
+#include "FPSComponent.h"
 
 Map::Map(yev::GameObject* ownerObjectPtr)
     : yev::Component(ownerObjectPtr),
-    m_Width(0)
-    , m_Height(0)
-    , m_TileSize(64) // Default tile size for Dig Dug style
+    m_Width(0),
+    m_Height(0),
+    m_TileSize(64)
 {
-    // Create child GameObjects for rendering different tile types
     m_EarthObj = std::make_unique<yev::GameObject>();
     m_EarthObj->AddComponent<yev::TransformComponent>(m_EarthObj.get());
     m_EarthObj->GetComponent<yev::TransformComponent>()->SetScale(glm::vec3(8, 8, 1.0f));
@@ -29,14 +34,14 @@ Map::Map(yev::GameObject* ownerObjectPtr)
     m_RockObj->GetComponent<yev::TransformComponent>()->SetScale(glm::vec3(8, 8, 1.0f));
     m_RockObj->AddComponent<yev::RenderComponent>(m_RockObj.get(), m_TextureRockPath);
 
-    // Set parent-child relationships to have proper transforms
     m_EarthObj->SetParent(ownerObjectPtr, true);
     m_RockObj->SetParent(ownerObjectPtr, true);
+
 }
 
 Enemy::~Enemy()
 {
-    if (m_Map)
+    if (m_Map && !IsAlive())
     {
         m_Map->UnregisterEnemy(this);
     }
@@ -325,7 +330,7 @@ void Map::RegisterEnemy(Enemy* enemy)
 }
 void Map::UnregisterEnemy(Enemy* enemy)
 {
-    if (enemy && !m_Enemies.empty())
+    if (enemy && !m_Enemies.empty() && !enemy->IsAlive())
     {
         auto it = std::find(m_Enemies.begin(), m_Enemies.end(), enemy);
         if (it != m_Enemies.end())
@@ -404,62 +409,100 @@ void Map::ClearLevel()
 
 void Map::LoadNextLevel()
 {
-    // Create a new scene for the next level
-    auto& sceneManager = yev::SceneManager::GetInstance();
-    auto& newScene = sceneManager.CreateScene("Level2");
 
- 
+	int nextLevelIndex = m_ThisMapLevelIndex + 1;
 
-    // Create a map object for the new scene
-    auto mapObject = std::make_unique<yev::GameObject>();
-    mapObject->AddComponent<yev::TransformComponent>(mapObject.get());
-    mapObject->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 0, -5);
+	std::string nextLevelName = "Level" + nextLevelIndex;
+    auto& scene = yev::SceneManager::GetInstance().CreateScene(nextLevelName);
 
-    // Create the map component and load Level2.txt
-    auto mapComponent = mapObject->AddComponent<Map>(mapObject.get());
-    bool success = mapComponent->LoadFromFile("../Data/Map.txt");
+    auto map = std::make_unique<yev::GameObject>();
+    map->AddComponent<yev::TransformComponent>(map.get());
+    map->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 0, -5);
+    map->AddComponent<Map>(map.get());
+    map->GetComponent<Map>()->LoadLevel(scene, nextLevelIndex);
 
+    scene.Add(std::move(map));
+
+	auto& sceneManager = yev::SceneManager::GetInstance();
+    sceneManager.SetActiveScene(&scene);
+}
+
+void Map::LoadLevel(yev::Scene& scene, int levelIndex)
+{
+	m_ThisMapLevelIndex = levelIndex;
+
+    bool success{};
+    switch (m_ThisMapLevelIndex)
+    {
+    case 1:
+        success = LoadFromFile(m_Level1FilePath);
+        break;
+	case 2:
+        success = LoadFromFile(m_Level2FilePath);
+		break;
+    case 3:
+        success = LoadFromFile(m_Level3FilePath);
+		break;
+    }
+  
+      
     if (!success)
     {
-        std::cerr << "Failed to load next level: " << "Map.txt" << std::endl;
+        std::cerr << "Failed to load next level" << std::endl;
         return;
     }
 
     // Spawn enemies and players in the new scene
-    mapComponent->SpawnEnemies(newScene);
-    mapComponent->SpawnPlayers(newScene);
+    SpawnEnemies(scene);
+    SpawnPlayers(scene);
 
+    CreateUI(scene);
+ 
+    std::cout << "Level " << m_ThisMapLevelIndex << " loaded successfully!" << std::endl;
+}
+
+void Map::CreateUI(yev::Scene& scene)
+{
     // Add UI elements (based on Main.cpp's load function)
-    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 20);
+    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 50);
 
-    //// Create score display
-    //auto scoreDisplay = std::make_unique<yev::GameObject>();
-    //scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
-    //scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(400, 300, 0);
-    //scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
-    //scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
 
-    //// Create health display
-    //auto healthDisplay = std::make_unique<yev::GameObject>();
-    //healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
-    //healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(400, 400, 0);
-    //healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
-    //healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
+    auto digdug = std::make_unique<yev::GameObject>();
+    digdug->AddComponent<yev::TransformComponent>(digdug.get());
+    digdug->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 50, 0);
+    digdug->AddComponent<yev::TextComponent>(digdug.get(), "DigDug", font);
+    // Create score display
+    auto scoreDisplay = std::make_unique<yev::GameObject>();
+    scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
+    scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 400, 0);
+    scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
+    scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
 
-    //// Add FPS counter
-    //auto fps = std::make_unique<yev::GameObject>();
-    //fps->AddComponent<yev::TransformComponent>(fps.get());
-    //fps->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 100, 0);
-    //fps->AddComponent<yev::TextComponent>(fps.get(), font);
-    //fps->AddComponent<yev::FPSComponent>(fps.get());
+    // Create health display
+    auto healthDisplay = std::make_unique<yev::GameObject>();
+    healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
+    healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 500, 0);
+    healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
+    healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
 
-    //// Add all objects to the new scene
-    //newScene.Add(std::move(scoreDisplay));
-    //newScene.Add(std::move(healthDisplay));
-    //newScene.Add(std::move(fps));
-    newScene.Add(std::move(mapObject));
+    // Add FPS counter
+    auto fps = std::make_unique<yev::GameObject>();
+    fps->AddComponent<yev::TransformComponent>(fps.get());
+    fps->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 200, 0);
+    fps->AddComponent<yev::TextComponent>(fps.get(), font);
+    fps->AddComponent<yev::FPSComponent>(fps.get());
 
-	sceneManager.SetActiveScene(&newScene);
+    auto levelname = std::make_unique<yev::GameObject>();
 
-    std::cout << "Level 2 loaded successfully!" << std::endl;
+	std::string name = "Level" + std::to_string(m_ThisMapLevelIndex);
+    levelname->AddComponent<yev::TransformComponent>(levelname.get());
+    levelname->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 300, 0);
+    levelname->AddComponent<yev::TextComponent>(levelname.get(), name, font);
+
+    // Add all objects to the new scene
+    scene.Add(std::move(levelname));
+	scene.Add(std::move(digdug));
+    scene.Add(std::move(scoreDisplay));
+    scene.Add(std::move(healthDisplay));
+    scene.Add(std::move(fps));
 }

@@ -53,11 +53,11 @@ yev::Minigin::Minigin(const std::string &dataPath)
 	}
 
 	g_window = SDL_CreateWindow(
-		"Yevhenii Ovramenko - Programming 4 assignment",
+		"Yevhenii Ovramenko - DigDug",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		1000,
-		1000,
+		1280,
+		960,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 

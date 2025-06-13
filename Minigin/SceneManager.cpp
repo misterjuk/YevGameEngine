@@ -81,3 +81,21 @@ void yev::SceneManager::SetActiveScene(Scene* scene)
         m_activeScene = nullptr;
     }
 }
+
+void yev::SceneManager::SetActiveScene(const std::string& name)
+{
+    auto it = std::find_if(m_scenes.begin(), m_scenes.end(),
+        [&name](const std::shared_ptr<Scene>& scene) {
+            return scene->GetName() == name;
+        });
+
+    if (it != m_scenes.end())
+    {
+        m_activeScene = it->get();
+        std::cout << "Active scene changed to: " << name << std::endl;
+    }
+    else
+    {
+        std::cerr << "Warning: No scene found with name: " << name << std::endl;
+    }
+}
