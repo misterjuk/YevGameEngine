@@ -10,6 +10,9 @@ namespace GameEvents
     static constexpr yev::IObserver::Event PlayerScored{ 2 };
     static constexpr yev::IObserver::Event EnemyKilled{ 3 };
     static constexpr yev::IObserver::Event LevelCompleted{ 4 };
+    static constexpr yev::IObserver::Event TileDestroyed{ 5 };
+    static constexpr yev::IObserver::Event ScoreChanged{ 6 };
 }
+
 
 #endif // GAME_EVENTS_H

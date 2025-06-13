@@ -20,6 +20,7 @@ void ScoreComponent::AddScore(int score)
 	//m_ScoreText->SetText("Score: " + std::to_string(m_currentScore));
 
 	//std::cout << "Score: " << m_currentScore << std::endl;
+	NotifyObservers(GameEvents::ScoreChanged, m_Owner);
 }
 
 void ScoreComponent::SaveHighScore()
@@ -52,13 +53,13 @@ void ScoreComponent::LoadHighScore()
     }
 }
 
-void ScoreComponent::Notify(Event event, yev::GameObject* gameObject)
+void ScoreComponent::Notify(Event, yev::GameObject*)
 {
-    if (event == GameEvents::PlayerScored)
+    /*if (event == GameEvents::PlayerScored)
     {
         AddScore(10);
         NotifyObservers(GameEvents::PlayerScored, gameObject);
-    }
+    }*/
 	
 }
 

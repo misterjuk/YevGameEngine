@@ -3,6 +3,7 @@
 #include "GameEvents.h"
 #include "GameObject.h"
 #include "ScoreComponent.h"
+
 ScoreDisplayComponent::ScoreDisplayComponent(yev::GameObject* ownerObjectPtr, yev::TextComponent* textComponent)
 	: yev::Component(ownerObjectPtr), m_ScoreText{ textComponent }
 {
@@ -16,11 +17,10 @@ void ScoreDisplayComponent::UpdateScoreDiplay(int currentScore)
 
 void ScoreDisplayComponent::Notify(Event event, yev::GameObject* actor)
 {
-	if (event == GameEvents::PlayerScored)
+	if (event == GameEvents::ScoreChanged)
 	{
 		if (actor)
-		{
-			//maybe pass health as a parameter
+		{			
 			UpdateScoreDiplay(actor->GetComponent<ScoreComponent>()->GetCurrentScore());
 		}
 

@@ -17,6 +17,7 @@
 #include "ScoreDisplayComponent.h"
 #include "HealthDisplayComponent.h"
 #include "FPSComponent.h"
+#include "ScoreComponent.h"
 
 Map::Map(yev::GameObject* ownerObjectPtr)
     : yev::Component(ownerObjectPtr),
@@ -232,7 +233,26 @@ void Map::SpawnPlayers(yev::Scene& scene)
  
     auto player = CreatePlayerAt(playerPosition);
 
+    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 50);
+    //BAD WORKAROUND
+    auto scoreDisplay = std::make_unique<yev::GameObject>();
+    scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
+    scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 400, 0);
+    scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
+    scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
+	
+	player->GetComponent<ScoreComponent>()->AddObserver(scoreDisplay->GetComponent<ScoreDisplayComponent>());
+    //BAD WORKAROUND
+    auto healthDisplay = std::make_unique<yev::GameObject>();
+    healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
+    healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 500, 0);
+    healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
+    healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
+
     scene.Add(std::move(player));
+
+    scene.Add(std::move(scoreDisplay));
+    scene.Add(std::move(healthDisplay));
 
     std::cout << "Spawned Player" << std::endl;
 }
@@ -250,6 +270,8 @@ std::unique_ptr<yev::GameObject> Map::CreatePlayerAt(const Position& position)
 
     playerObj->AddComponent<GridMovementComponent>(playerObj.get(), this, true);
     playerObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
+
+	playerObj->AddComponent<ScoreComponent>(playerObj.get());
 
     playerObj->AddComponent<Player>(playerObj.get(), this);
 
@@ -471,19 +493,8 @@ void Map::CreateUI(yev::Scene& scene)
     digdug->AddComponent<yev::TransformComponent>(digdug.get());
     digdug->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 50, 0);
     digdug->AddComponent<yev::TextComponent>(digdug.get(), "DigDug", font);
-    // Create score display
-    auto scoreDisplay = std::make_unique<yev::GameObject>();
-    scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
-    scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 400, 0);
-    scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
-    scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
-
-    // Create health display
-    auto healthDisplay = std::make_unique<yev::GameObject>();
-    healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
-    healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 500, 0);
-    healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
-    healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
+   
+  
 
     // Add FPS counter
     auto fps = std::make_unique<yev::GameObject>();
@@ -502,7 +513,6 @@ void Map::CreateUI(yev::Scene& scene)
     // Add all objects to the new scene
     scene.Add(std::move(levelname));
 	scene.Add(std::move(digdug));
-    scene.Add(std::move(scoreDisplay));
-    scene.Add(std::move(healthDisplay));
+
     scene.Add(std::move(fps));
 }

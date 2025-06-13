@@ -4,6 +4,7 @@
 #include "Time.h"
 #include <iostream>
 #include "Map.h"
+#include "ScoreComponent.h"
 
 
 GridMovementComponent::GridMovementComponent(yev::GameObject* ownerObjectPtr, Map* map, bool isPlayer)
@@ -196,7 +197,18 @@ void GridMovementComponent::DigAtCurrentPosition()
     if (m_Map)
     {
         if (m_IsPlayer)
-        m_Map->DigTunnel(m_GridPosition.x, m_GridPosition.y);
+        {
+            bool tileWasEarth = m_Map->GetTileAt(m_GridPosition.x, m_GridPosition.y) == TileType::Earth;
+            m_Map->DigTunnel(m_GridPosition.x, m_GridPosition.y);
+
+            if (tileWasEarth && GetOwner())
+            {
+                if (m_Owner->HasComponent<ScoreComponent>())
+                {
+                    m_Owner->GetComponent<ScoreComponent>()->AddScore(10);
+                }               
+            }
+        }
     }
 }
 
