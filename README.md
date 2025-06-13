@@ -13,4 +13,4 @@ Welcome to the Custom 2D engine and DigDug Remake project! This is a modern rein
 - **Component System**: Game objects are managed using a component-based architecture, prioritizing composition over inheritance. Components use the Observer pattern for event handling.
 - **Player and Enemies**: player and enemies are handled using the State pattern.
 
-[a link](https://github.com/misterjuk/YevGameEngine)
+[GitHub Link](https://github.com/misterjuk/YevGameEngine)
