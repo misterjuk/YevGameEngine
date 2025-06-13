@@ -5,6 +5,9 @@
 #include "Renderer.h"
 #include "Texture2D.h"
 #include "Font.h"
+#include "SoundEffect.h"
+#include <string>
+#include <memory>
 
 namespace fs = std::filesystem;
 
@@ -16,6 +19,12 @@ void yev::ResourceManager::Init(const std::filesystem::path& dataPath)
 	{
 		throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
 	}
+}
+
+std::unique_ptr<yev::SoundEffect> yev::ResourceManager::LoadSoundEffect(const std::string& file) const
+{
+	const auto fullPath = m_dataPath / file;
+	return std::make_unique<yev::SoundEffect>(fullPath.string());
 }
 
 std::shared_ptr<yev::Texture2D> yev::ResourceManager::LoadTexture(const std::string& file)

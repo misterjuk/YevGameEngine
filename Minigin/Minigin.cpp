@@ -12,7 +12,7 @@
 #include "Time.h"
 #include <thread>
 #include <iostream>
-
+#include "ServiceLocator.h"
 SDL_Window* g_window{};
 
 void PrintSDLVersion()
@@ -41,6 +41,9 @@ void PrintSDLVersion()
 	version = *TTF_Linked_Version();
 	printf("We are linking against SDL_ttf version %u.%u.%u.\n",
 		version.major, version.minor, version.patch);
+
+	std::unique_ptr pLoggingSoundManager{ std::make_unique<yev::LoggingSoundManager>(std::make_unique<yev::SoundManager>()) };
+	yev::ServiceLocator::GetInstance().RegisterSoundSystem(std::move(pLoggingSoundManager));
 }
 
 yev::Minigin::Minigin(const std::string &dataPath)
@@ -80,7 +83,12 @@ yev::Minigin::~Minigin()
 
 void yev::Minigin::Run(const std::function<void()>& load)
 {
+
+
+	ServiceLocator::GetInstance().GetSoundSystem()->StartPlayback();
+
 	load();
+
 
 	auto& renderer = Renderer::GetInstance();
 	auto& sceneManager = SceneManager::GetInstance();
@@ -119,4 +127,6 @@ void yev::Minigin::Run(const std::function<void()>& load)
 		std::this_thread::sleep_for(sleep_time);
 	
 	}
+
+	ServiceLocator::GetInstance().GetSoundSystem()->StopPlayback();
 }
