@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Enemy.h"
 
+// CREATING STATES EACH TIME IS BAD SHOULD REDO IT
 
 std::unique_ptr<PlayerState> PlayerState::HandleMovementInput(Player*, GridMovementComponent::MovementDirection)
 {
@@ -85,6 +86,7 @@ std::unique_ptr<PlayerState> PlayerIdleState::HandleMovementInput(Player* player
 {
     if (direction != GridMovementComponent::MovementDirection::None && CanMove(player, direction))
     {
+        // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
         return std::make_unique<PlayerMovingState>(direction);
     }
     return nullptr;
@@ -92,11 +94,13 @@ std::unique_ptr<PlayerState> PlayerIdleState::HandleMovementInput(Player* player
 
 std::unique_ptr<PlayerState> PlayerIdleState::HandleDigInput(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerDiggingState>();
 }
 
 std::unique_ptr<PlayerState> PlayerIdleState::HandleAttackInput(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerAttackingState>();
 }
 
@@ -168,6 +172,7 @@ std::unique_ptr<PlayerState> PlayerMovingState::HandleMovementInput(Player* play
     
     if (direction != m_Direction && direction != GridMovementComponent::MovementDirection::None && CanMove(player, direction))
     {
+        // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
         return std::make_unique<PlayerMovingState>(direction);
     }
     return nullptr;
@@ -175,16 +180,19 @@ std::unique_ptr<PlayerState> PlayerMovingState::HandleMovementInput(Player* play
 
 std::unique_ptr<PlayerState> PlayerMovingState::HandleDigInput(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerDiggingState>();
 }
 
 std::unique_ptr<PlayerState> PlayerMovingState::HandleAttackInput(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerAttackingState>();
 }
 
 std::unique_ptr<PlayerState> PlayerMovingState::HandleStateExpired(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerIdleState>();
 }
 
@@ -289,6 +297,7 @@ void PlayerAttackingState::Exit(Player*)
 
 std::unique_ptr<PlayerState> PlayerAttackingState::HandleStateExpired(Player*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<PlayerIdleState>();
 }
 

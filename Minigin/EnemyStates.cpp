@@ -19,6 +19,7 @@ std::unique_ptr<EnemyState> EnemyState::HandlePlayerLost(Enemy*)
 
 std::unique_ptr<EnemyState> EnemyState::HandleDamaged(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyStunnedState>();
 }
 
@@ -123,11 +124,13 @@ void EnemyIdleState::Exit(Enemy*)
 
 std::unique_ptr<EnemyState> EnemyIdleState::HandlePlayerSeen(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyChaseState>();
 }
 
 std::unique_ptr<EnemyState> EnemyIdleState::HandleStateExpired(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyPatrolState>();
 }
 
@@ -207,6 +210,7 @@ void EnemyPatrolState::Exit(Enemy*)
 
 std::unique_ptr<EnemyState> EnemyPatrolState::HandlePlayerSeen(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyChaseState>();
 }
 
@@ -281,11 +285,13 @@ void EnemyChaseState::Exit(Enemy* enemy)
 
 std::unique_ptr<EnemyState> EnemyChaseState::HandlePlayerLost(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyPatrolState>();
 }
 
 std::unique_ptr<EnemyState> EnemyChaseState::HandleDamaged(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyStunnedState>();
 }
 
@@ -323,6 +329,7 @@ void EnemyStunnedState::Exit(Enemy*)
 
 std::unique_ptr<EnemyState> EnemyStunnedState::HandleStateExpired(Enemy*)
 {
+    // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
     return std::make_unique<EnemyIdleState>();
 }
 

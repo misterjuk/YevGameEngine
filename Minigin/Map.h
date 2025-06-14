@@ -96,9 +96,9 @@ private:
     bool m_UIInitialized{ false };
 
 
-	const std::string m_Level1FilePath{ "../Data/Level1.txt" };
-    const std::string m_Level2FilePath{ "../Data/Level2.txt" };
-    const std::string m_Level3FilePath{ "../Data/Level3.txt" };
+	const std::string m_Level1FilePath{ "Data/Level1.txt" };
+    const std::string m_Level2FilePath{ "Data/Level2.txt" };
+    const std::string m_Level3FilePath{ "Data/Level3.txt" };
 
     std::vector<Enemy*> m_Enemies;
     std::vector<Player*> m_Players;
