@@ -118,7 +118,7 @@ void EnemyIdleState::Update(Enemy* enemy, float deltaTime)
 
 void EnemyIdleState::Exit(Enemy*)
 {
-    // Clean up idle state resources if needed
+   
 }
 
 std::unique_ptr<EnemyState> EnemyIdleState::HandlePlayerSeen(Enemy*)
@@ -318,7 +318,7 @@ void EnemyStunnedState::Update(Enemy* enemy, float deltaTime)
 
 void EnemyStunnedState::Exit(Enemy*)
 {
-    // Clean up stunned state resources if needed
+   
 }
 
 std::unique_ptr<EnemyState> EnemyStunnedState::HandleStateExpired(Enemy*)
@@ -369,5 +369,5 @@ void EnemyDeathState::Update(Enemy* enemy, float deltaTime)
 
 void EnemyDeathState::Exit(Enemy*)
 {
-    // Clean up death state resources if needed
+   
 }

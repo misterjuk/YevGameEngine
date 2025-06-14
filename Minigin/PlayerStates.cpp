@@ -8,30 +8,30 @@
 #include <iostream>
 #include "Enemy.h"
 
-// Base PlayerState methods
+
 std::unique_ptr<PlayerState> PlayerState::HandleMovementInput(Player*, GridMovementComponent::MovementDirection)
 {
-    return nullptr; // Default: no state change
+    return nullptr; 
 }
 
 std::unique_ptr<PlayerState> PlayerState::HandleDigInput(Player*)
 {
-    return nullptr; // Default: no state change
+    return nullptr;
 }
 
 std::unique_ptr<PlayerState> PlayerState::HandleAttackInput(Player*)
 {
-    return nullptr; // Default: no state change
+    return nullptr; 
 }
 
 std::unique_ptr<PlayerState> PlayerState::HandleDamaged(Player*)
 {
-    return nullptr; // Default: no state change
+    return nullptr; 
 }
 
 std::unique_ptr<PlayerState> PlayerState::HandleStateExpired(Player*)
 {
-    return nullptr; // Default: no state change
+    return nullptr;
 }
 
 bool PlayerState::CanMove(Player* player, GridMovementComponent::MovementDirection direction) const
@@ -64,32 +64,21 @@ bool PlayerState::CanMove(Player* player, GridMovementComponent::MovementDirecti
     return movement->CanMoveToPosition(newX, newY);
 }
 
-// PlayerIdleState implementation
-void PlayerIdleState::Enter(Player* player)
+void PlayerIdleState::Enter(Player* )
 {
-    m_IdleTime = 0.0f;
-    
-    // Visual indicator for idle state (could change animation/texture)
-    if (auto owner = player->GetOwner())
-    {
-        if (auto render = owner->GetComponent<yev::RenderComponent>())
-        {
-            // Change appearance for idle state
-            // render->SetTexture("PlayerIdle.png");
-        }
-    }
+   
 }
 
 void PlayerIdleState::Update(Player* , float deltaTime)
 {
     m_IdleTime += deltaTime;
     
-    // Idle animations or logic could go here
+
 }
 
 void PlayerIdleState::Exit(Player*)
 {
-    // Clean up idle state resources if needed
+   
 }
 
 std::unique_ptr<PlayerState> PlayerIdleState::HandleMovementInput(Player* player, GridMovementComponent::MovementDirection direction)
@@ -111,7 +100,7 @@ std::unique_ptr<PlayerState> PlayerIdleState::HandleAttackInput(Player*)
     return std::make_unique<PlayerAttackingState>();
 }
 
-// PlayerMovingState implementation
+
 PlayerMovingState::PlayerMovingState(GridMovementComponent::MovementDirection direction)
     : m_Direction(direction)
 {
@@ -121,7 +110,7 @@ void PlayerMovingState::Enter(Player* player)
 {
     m_HasMoved = false;
     
-    // Visual indicator for moving state (could change animation/texture)
+ 
     if (auto owner = player->GetOwner())
     {
         playerRenderComponent = owner->GetComponent<yev::RenderComponent>();
@@ -159,7 +148,7 @@ void PlayerMovingState::Enter(Player* player)
 
 void PlayerMovingState::Update(Player* player, float )
 {
-    // Automatically transition back to idle once movement is complete
+   
     if (m_HasMoved)
     {
 
@@ -171,12 +160,12 @@ void PlayerMovingState::Update(Player* player, float )
 
 void PlayerMovingState::Exit(Player*)
 {
-    // Clean up moving state resources if needed
+   
 }
 
 std::unique_ptr<PlayerState> PlayerMovingState::HandleMovementInput(Player* player, GridMovementComponent::MovementDirection direction)
 {
-    // If we get a new movement input, create a new moving state in that direction
+    
     if (direction != m_Direction && direction != GridMovementComponent::MovementDirection::None && CanMove(player, direction))
     {
         return std::make_unique<PlayerMovingState>(direction);
@@ -199,21 +188,13 @@ std::unique_ptr<PlayerState> PlayerMovingState::HandleStateExpired(Player*)
     return std::make_unique<PlayerIdleState>();
 }
 
-// PlayerDiggingState implementation
+
 void PlayerDiggingState::Enter(Player* player)
 {
     m_DigTimer = 0.0f;
     
-    // Visual indicator for digging state
-    if (auto owner = player->GetOwner())
-    {
-        if (auto render = owner->GetComponent<yev::RenderComponent>())
-        {
-            // Change appearance for digging state
-            // render->SetTexture("PlayerDigging.png");
-        }
-    }
-    
+   
+   
     // Perform the dig action
     auto movement = player->GetMovement();
     if (movement)
@@ -226,7 +207,7 @@ void PlayerDiggingState::Update(Player* player, float deltaTime)
 {
     m_DigTimer += deltaTime;
     
-    // Return to idle after digging completes
+   
     if (m_DigTimer >= m_DigDuration)
     {
         auto newState = HandleStateExpired(player);
@@ -237,7 +218,7 @@ void PlayerDiggingState::Update(Player* player, float deltaTime)
 
 void PlayerDiggingState::Exit(Player*)
 {
-    // Clean up digging state resources if needed
+    
 }
 
 std::unique_ptr<PlayerState> PlayerDiggingState::HandleStateExpired(Player*)
@@ -250,28 +231,17 @@ void PlayerAttackingState::Enter(Player* player)
     m_AttackTimer = 0.0f;
     m_HasHitEnemy = false;
     
-    // Visual indicator for attack state
-    if (auto owner = player->GetOwner())
-    {
-        if (auto render = owner->GetComponent<yev::RenderComponent>())
-        {
-            // Change appearance for attack state
-            // render->SetTexture("PlayerAttacking.png");
-        }
-    }
-    
+   
     FindAndAttackEnemyInFront(player);
 }
 
 void PlayerAttackingState::Update(Player* player, float deltaTime)
 {
     
-
-    // Apply continuous damage to enemy if hit (simulates pumping)
     if (m_HasHitEnemy && m_TargetEnemy)
     {
         m_AttackTimer += deltaTime;
-        // Apply damage every 0.3 seconds to simulate pumping action
+        
         if (m_AttackTimer > 0.3f)
         {
             m_AttackTimer = 0.0f;
@@ -303,7 +273,7 @@ void PlayerAttackingState::Update(Player* player, float deltaTime)
         return;
     }
 
-    // Return to idle after attack completes
+
     if (m_AttackTimer >= m_AttackDuration)
     {
         auto newState = HandleStateExpired(player);
@@ -331,11 +301,11 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
     if (!movement)
         return;
 
-    // Get player's position and direction
+   
     Position playerPos = movement->GetGridPosition();
     GridMovementComponent::MovementDirection playerDir = movement->GetDirection();
 
-    // Skip if the player doesn't have a direction (shouldn't happen, but safety check)
+
     if (playerDir == GridMovementComponent::MovementDirection::None)
         return;
 
@@ -343,10 +313,10 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
     if (!map)
         return;
 
-    // Get all enemies from the map registry
+   
     const std::vector<Enemy*>& enemies = map->GetAllEnemies();
 
-    // Check if any enemies are in the attack direction
+
     for (Enemy* enemy : enemies)
     {
         if (enemy && enemy->IsAlive())
@@ -356,7 +326,6 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
             {
                 Position enemyPos = enemyMovement->GetGridPosition();
 
-                // Check if enemy is in the attack direction
                 bool inAttackDirection = false;
                 int distance = 0;
 
@@ -384,7 +353,7 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
 
                 if (inAttackDirection && distance <= m_AttackRange)
                 {
-                    // Check if there are any walls between player and enemy
+                   
                     bool pathClear = true;
                     for (int i = 1; i < distance; i++)
                     {
@@ -416,20 +385,13 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
 
                     if (pathClear)
                     {
-                        // Found an enemy to attack!
                        // enemy->TakeDamage(1);
-                        enemy->Stun(); // Stun the enemy immediately
+                        enemy->Stun(); 
 
                         m_HasHitEnemy = true;
                         m_TargetEnemy = enemy; // Store reference for continuous damage
 
-                        // If the player has a score component, reward player for hit
-                        /*if (auto scoreComp = player->GetOwner()->GetComponent<ScoreComponent>())
-                        {
-                            scoreComp->AddScore(50);
-                        }*/
-
-                        return; // Stop after hitting the first enemy
+                        return; 
                     }
                 }
             }
@@ -437,13 +399,12 @@ void PlayerAttackingState::FindAndAttackEnemyInFront(Player* player)
     }
 }
 
-// PlayerDyingState implementation
+
 void PlayerDyingState::Enter(Player* player)
 {
     m_DeathTimer = 0.0f;
     m_AnimationComplete = false;
     
-    // Visual indicator for death state
     if (auto owner = player->GetOwner())
     {
         if (auto render = owner->GetComponent<yev::RenderComponent>())
@@ -461,7 +422,7 @@ void PlayerDyingState::Update(Player* player, float deltaTime)
     
     m_DeathTimer += deltaTime;
     
-    // Complete death animation
+
     if (m_DeathTimer >= m_DeathAnimationDuration)
     {
         m_AnimationComplete = true;
@@ -475,5 +436,5 @@ void PlayerDyingState::Update(Player* player, float deltaTime)
 
 void PlayerDyingState::Exit(Player*)
 {
-    // Clean up death state resources if needed
+    
 }

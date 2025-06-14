@@ -93,7 +93,8 @@ private:
 
 	int m_ThisMapLevelIndex{0};
 
-   
+    bool m_UIInitialized{ false };
+
 
 	const std::string m_Level1FilePath{ "../Data/Level1.txt" };
     const std::string m_Level2FilePath{ "../Data/Level2.txt" };

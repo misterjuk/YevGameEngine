@@ -7,6 +7,7 @@
 #include "IObserver.h"
 #include "Subject.h"
 
+
 namespace yev
 {
     class GameObject;
@@ -36,6 +37,9 @@ public:
     void LoadHighScore();
 
     void Notify(Event event, yev::GameObject* actor) override;
+
+    // Add to ScoreComponent.h
+    void SetScore(int score);
 
 private:
     // Path to the high score file

@@ -60,7 +60,11 @@ public:
 
     float GetAnimationTime() { return m_AnimationTime; };
 
+    
+
 private:
+
+    void SavePlayerState();
     // Components and references
     Map* m_Map{};
     yev::TransformComponent* m_Transform{};

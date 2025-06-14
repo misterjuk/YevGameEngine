@@ -3,16 +3,24 @@
 #include "GameEvents.h"
 #include "GameObject.h"
 #include "ScoreComponent.h"
+#include "GameManager.h"
 
 ScoreDisplayComponent::ScoreDisplayComponent(yev::GameObject* ownerObjectPtr, yev::TextComponent* textComponent)
 	: yev::Component(ownerObjectPtr), m_ScoreText{ textComponent }
 {
-	UpdateScoreDiplay(0);
+	//BAD WORKAROUND
+	UpdateScoreDiplay(GameManager::GetInstance().GetPlayerScore());
 }
 
 void ScoreDisplayComponent::UpdateScoreDiplay(int currentScore)
 {
 	m_ScoreText->SetText("Score: " + std::to_string(currentScore));
+}
+
+void ScoreDisplayComponent::ForceScoreUpdate()
+{
+	//BAD WORKAROUND
+	UpdateScoreDiplay(GameManager::GetInstance().GetPlayerScore());
 }
 
 void ScoreDisplayComponent::Notify(Event event, yev::GameObject* actor)

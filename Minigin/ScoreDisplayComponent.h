@@ -25,6 +25,7 @@ public:
     ScoreDisplayComponent& operator=(ScoreDisplayComponent&&) = delete;
 
     void UpdateScoreDiplay(int currentHealth);
+    void ForceScoreUpdate();
 
     void Notify(Event event, yev::GameObject* actor) override;
 

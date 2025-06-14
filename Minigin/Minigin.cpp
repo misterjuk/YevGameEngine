@@ -75,6 +75,8 @@ yev::Minigin::Minigin(const std::string &dataPath)
 
 yev::Minigin::~Minigin()
 {
+	ServiceLocator::RegisterSoundSystem(nullptr); 
+
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;

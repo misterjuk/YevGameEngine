@@ -18,6 +18,9 @@ namespace yev
 
 		const std::string& GetName() const { return m_name; }
 
+		
+		const std::vector<std::unique_ptr<GameObject>>& GetObjects() const { return m_objects; }
+
 		~Scene();
 		Scene(const Scene& other) = delete;
 		Scene(Scene&& other) = delete;

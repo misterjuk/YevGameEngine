@@ -18,6 +18,7 @@
 #include "HealthDisplayComponent.h"
 #include "FPSComponent.h"
 #include "ScoreComponent.h"
+#include "GameManager.h"
 
 Map::Map(yev::GameObject* ownerObjectPtr)
     : yev::Component(ownerObjectPtr),
@@ -233,6 +234,9 @@ void Map::SpawnPlayers(yev::Scene& scene)
  
     auto player = CreatePlayerAt(playerPosition);
 
+
+    if(!m_UIInitialized)
+    {
     auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 50);
     //BAD WORKAROUND
     auto scoreDisplay = std::make_unique<yev::GameObject>();
@@ -240,8 +244,8 @@ void Map::SpawnPlayers(yev::Scene& scene)
     scoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 400, 0);
     scoreDisplay->AddComponent<yev::TextComponent>(scoreDisplay.get(), "Score", font);
     scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
-	
-	player->GetComponent<ScoreComponent>()->AddObserver(scoreDisplay->GetComponent<ScoreDisplayComponent>());
+
+    player->GetComponent<ScoreComponent>()->AddObserver(scoreDisplay->GetComponent<ScoreDisplayComponent>());
     //BAD WORKAROUND
     auto healthDisplay = std::make_unique<yev::GameObject>();
     healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
@@ -249,10 +253,30 @@ void Map::SpawnPlayers(yev::Scene& scene)
     healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
     healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
 
-    scene.Add(std::move(player));
-
     scene.Add(std::move(scoreDisplay));
     scene.Add(std::move(healthDisplay));
+
+    }
+    else {
+        //BAD WORKAROUND
+        auto& activeScene = yev::SceneManager::GetInstance().GetActiveScene();
+
+        for (const auto& obj : activeScene.GetObjects())
+        {
+            if (obj->HasComponent<ScoreDisplayComponent>())
+            {
+                player->GetComponent<ScoreComponent>()->AddObserver(obj->GetComponent<ScoreDisplayComponent>());
+                //BAD WORKAROUND
+                obj->GetComponent<ScoreDisplayComponent>()->ForceScoreUpdate();
+                break;
+				//should be return or something like that to stop the loop, but this is a workaround
+            }
+        }
+    }
+   
+    scene.Add(std::move(player));
+
+   
 
     std::cout << "Spawned Player" << std::endl;
 }
@@ -272,6 +296,12 @@ std::unique_ptr<yev::GameObject> Map::CreatePlayerAt(const Position& position)
     playerObj->GetComponent<GridMovementComponent>()->SetGridPosition(position.x, position.y);
 
 	playerObj->AddComponent<ScoreComponent>(playerObj.get());
+
+    int savedScore = GameManager::GetInstance().GetPlayerScore();
+    if (savedScore > 0)
+    {
+        playerObj->GetComponent<ScoreComponent>()->SetScore(savedScore);
+    }
 
     playerObj->AddComponent<Player>(playerObj.get(), this);
 
@@ -434,24 +464,53 @@ void Map::LoadNextLevel()
 
 	int nextLevelIndex = m_ThisMapLevelIndex + 1;
 
+    if (nextLevelIndex == 4) {
+        yev::SceneManager::GetInstance().SetActiveScene("EndScreen");
+        return;
+    }
+
 	std::string nextLevelName = "Level" + nextLevelIndex;
-    auto& scene = yev::SceneManager::GetInstance().CreateScene(nextLevelName);
+    if (yev::SceneManager::GetInstance().SetActiveScene(nextLevelName))
+    {
 
-    auto map = std::make_unique<yev::GameObject>();
-    map->AddComponent<yev::TransformComponent>(map.get());
-    map->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 0, -5);
-    map->AddComponent<Map>(map.get());
-    map->GetComponent<Map>()->LoadLevel(scene, nextLevelIndex);
+        auto& activeScene = yev::SceneManager::GetInstance().GetActiveScene();
 
-    scene.Add(std::move(map));
+        for (const auto& obj : activeScene.GetObjects())
+        {
+            if (obj->HasComponent<Map>())
+            {
+                obj->GetComponent<Map>()->LoadLevel(activeScene, m_ThisMapLevelIndex+1);
+                break;
+            }
+        }
 
-	auto& sceneManager = yev::SceneManager::GetInstance();
-    sceneManager.SetActiveScene(&scene);
+        yev::SceneManager::GetInstance().SetActiveScene(&activeScene);
+
+        return;
+    }
+    else {
+        auto& scene = yev::SceneManager::GetInstance().CreateScene(nextLevelName);
+
+        auto map = std::make_unique<yev::GameObject>();
+        map->AddComponent<yev::TransformComponent>(map.get());
+        map->GetComponent<yev::TransformComponent>()->SetLocalPosition(0, 0, -5);
+        map->AddComponent<Map>(map.get());
+        map->GetComponent<Map>()->LoadLevel(scene, nextLevelIndex);
+
+        scene.Add(std::move(map));
+
+        auto& sceneManager = yev::SceneManager::GetInstance();
+        sceneManager.SetActiveScene(&scene);
+    }
+    
 }
 
 void Map::LoadLevel(yev::Scene& scene, int levelIndex)
 {
-	m_ThisMapLevelIndex = levelIndex;
+    ClearLevel();
+
+    m_ThisMapLevelIndex = levelIndex;
+    GameManager::GetInstance().SetCurrentLevel(levelIndex);
 
     bool success{};
     switch (m_ThisMapLevelIndex)
@@ -478,6 +537,7 @@ void Map::LoadLevel(yev::Scene& scene, int levelIndex)
     SpawnEnemies(scene);
     SpawnPlayers(scene);
 
+    if(!m_UIInitialized)
     CreateUI(scene);
  
     std::cout << "Level " << m_ThisMapLevelIndex << " loaded successfully!" << std::endl;
@@ -515,4 +575,6 @@ void Map::CreateUI(yev::Scene& scene)
 	scene.Add(std::move(digdug));
 
     scene.Add(std::move(fps));
+
+	m_UIInitialized = true;
 }

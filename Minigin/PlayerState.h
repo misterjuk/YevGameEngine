@@ -4,7 +4,6 @@
 #include <string>
 #include "Enemy.h"
 
-// Forward declarations
 namespace yev { 
                 class GameObject; 
                 class RenderComponent; 
@@ -13,18 +12,15 @@ class Map;
 class Player;
 
 
-// Abstract base class for all player states
 class PlayerState
 {
 public:
     virtual ~PlayerState() = default;
 
-    // Core state functionality
     virtual void Enter(Player* player) = 0;
     virtual void Update(Player* player, float deltaTime) = 0;
     virtual void Exit(Player* player) = 0;
 
-    // Handle events that might trigger state transitions
     virtual std::unique_ptr<PlayerState> HandleMovementInput(Player* player, GridMovementComponent::MovementDirection direction);
     virtual std::unique_ptr<PlayerState> HandleDigInput(Player* player);
     virtual std::unique_ptr<PlayerState> HandleAttackInput(Player* player);
@@ -35,7 +31,6 @@ protected:
     bool CanMove(Player* player, GridMovementComponent::MovementDirection direction) const;
 };
 
-// Concrete player states
 class PlayerIdleState : public PlayerState
 {
 public:

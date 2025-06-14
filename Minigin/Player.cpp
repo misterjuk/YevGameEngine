@@ -9,6 +9,8 @@
 #include <algorithm>
 #include "InputManager.h"
 #include "PlayerCommands.h"
+#include "GameManager.h"
+#include "Gamepad.h"
 
 Player::Player(yev::GameObject* ownerObjectPtr, Map* map)
     : yev::Component(ownerObjectPtr)
@@ -40,6 +42,7 @@ Player::~Player()
 {
     if (m_Map)
     {
+        SavePlayerState();
         m_Map->UnregisterPlayer(this);
     }
 }
@@ -86,6 +89,13 @@ void Player::BindPlayerInput()
     inputManager.BindKeyboardCommand(SDLK_s, yev::InputState::Held, std::make_unique<PlayerMoveDownCommand>(m_Owner));
 
     inputManager.BindKeyboardCommand(SDLK_f, yev::InputState::Pressed,std::make_unique<PlayerAttackCommand>(this->GetOwner()));
+
+    inputManager.BindGamepadCommand(XINPUT_GAMEPAD_DPAD_LEFT, yev::InputState::Held, std::make_unique<PlayerMoveLeftCommand>(m_Owner));
+    inputManager.BindGamepadCommand(XINPUT_GAMEPAD_DPAD_RIGHT, yev::InputState::Held, std::make_unique<PlayerMoveRightCommand>(m_Owner));
+    inputManager.BindGamepadCommand(XINPUT_GAMEPAD_DPAD_UP, yev::InputState::Held, std::make_unique<PlayerMoveUpCommand>(m_Owner));
+    inputManager.BindGamepadCommand(XINPUT_GAMEPAD_DPAD_DOWN, yev::InputState::Held, std::make_unique<PlayerMoveDownCommand>(m_Owner));
+
+    inputManager.BindGamepadCommand(XINPUT_GAMEPAD_X, yev::InputState::Pressed, std::make_unique<PlayerAttackCommand>(this->GetOwner()));
 }
 
 void Player::HandleMovementInput(GridMovementComponent::MovementDirection direction)
@@ -118,9 +128,9 @@ void Player::HandleAttackInput()
         ChangeState(std::move(newState));
 }
 
-void Player::TakeDamage(int damage)
+void Player::TakeDamage(int )
 {
-    m_Health = std::max(0, m_Health - damage);
+    //m_Health = std::max(0, m_Health - damage);
     
     // Notify observers that player was damaged
     NotifyObservers(GameEvents::PlayerDamaged, GetOwner());
@@ -165,4 +175,10 @@ void Player::InitializePlayer()
     {
         movement->SetMovementSpeed(m_MoveSpeed);
     }
+}
+
+void Player::SavePlayerState()
+{
+    GameManager::GetInstance().SetPlayerScore(m_Score);
+    GameManager::GetInstance().SetPlayerHealth(m_Health);
 }

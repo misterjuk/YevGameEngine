@@ -56,7 +56,7 @@ yev::Scene& yev::SceneManager::CreateScene(const std::string& name)
     return *scene;
 }
 
-void yev::SceneManager::SetActiveScene(Scene* scene)
+bool yev::SceneManager::SetActiveScene(Scene* scene)
 {
     if (scene)
     {
@@ -69,20 +69,23 @@ void yev::SceneManager::SetActiveScene(Scene* scene)
         if (it != m_scenes.end())
         {
             m_activeScene = scene;
+            return true;
         }
         else
         {
             // Scene not found in our collection
             std::cerr << "Warning: Attempting to set an unknown scene as active" << std::endl;
+            return false;
         }
     }
     else
     {
         m_activeScene = nullptr;
+        return false;
     }
 }
 
-void yev::SceneManager::SetActiveScene(const std::string& name)
+bool yev::SceneManager::SetActiveScene(const std::string& name)
 {
     auto it = std::find_if(m_scenes.begin(), m_scenes.end(),
         [&name](const std::shared_ptr<Scene>& scene) {
@@ -93,9 +96,10 @@ void yev::SceneManager::SetActiveScene(const std::string& name)
     {
         m_activeScene = it->get();
         std::cout << "Active scene changed to: " << name << std::endl;
+		return true;
     }
     else
     {
-        std::cerr << "Warning: No scene found with name: " << name << std::endl;
+		return false;
     }
 }

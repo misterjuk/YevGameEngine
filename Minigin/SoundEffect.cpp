@@ -40,5 +40,6 @@ namespace yev
     SoundEffect::~SoundEffect()
     {
         Mix_FreeChunk(m_pSoundEffect);
+        m_pSoundEffect = nullptr;
     }
 }

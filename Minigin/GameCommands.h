@@ -5,6 +5,7 @@
 #include "SceneManager.h"
 #include "Scene.h"
 #include "ServiceLocator.h"
+#include "GameManager.h"
 class StartGameCommand : public yev::Command
 {
 public:
@@ -14,20 +15,9 @@ public:
     {
         if (yev::SceneManager::GetInstance().GetActiveScene().GetName() == "MainMenu")
         {
-            yev::SceneManager::GetInstance().SetActiveScene("Level1");
+            GameManager::GetInstance().SkipToLevel(1);
         }
-    }
-
-};
-
-class RestartGameCommand : public yev::Command
-{
-public:
-    RestartGameCommand() {};
-
-    void Execute() override
-    {
-        if (yev::SceneManager::GetInstance().GetActiveScene().GetName() == "EndScreen")
+        else if (yev::SceneManager::GetInstance().GetActiveScene().GetName() == "EndScreen")
         {
             yev::SceneManager::GetInstance().SetActiveScene("MainMenu");
         }
@@ -47,4 +37,27 @@ public:
     }
 
 };
+
+
+class SkipLevelCommand : public yev::Command
+{
+public:
+    SkipLevelCommand() = default;
+
+    void Execute() override
+    {
+		//BAD WORKAROUND
+        if (yev::SceneManager::GetInstance().GetActiveScene().GetName() == "MainMenu")
+        {
+            GameManager::GetInstance().SkipToLevel(1);
+        }
+        else 
+        {
+            int currentLevel = GameManager::GetInstance().GetCurrentLevel();
+            GameManager::GetInstance().SkipToLevel(currentLevel + 1);
+        }      
+    }
+};
+
 #endif
+
