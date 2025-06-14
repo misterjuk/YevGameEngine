@@ -42,7 +42,7 @@ Player::~Player()
 {
     if (m_Map)
     {
-        SavePlayerState();
+        //SavePlayerState();
         m_Map->UnregisterPlayer(this);
     }
 }

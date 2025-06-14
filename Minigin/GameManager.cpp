@@ -5,7 +5,7 @@
 #include "Map.h"
 #include <iostream>
 #include "TransformComponent.h"
-
+#include "HighScoreDisplayComponent.h"
 
 bool GameManager::SkipToLevel(int levelNumber)
 {
@@ -16,6 +16,20 @@ bool GameManager::SkipToLevel(int levelNumber)
     }
     else if(levelNumber == 4)
     {
+        // BAD WORKAROUND
+        auto& activeScene = yev::SceneManager::GetInstance().GetActiveScene();
+        for (const auto& obj : activeScene.GetObjects())
+        {
+            if (obj->HasComponent<HighScoreDisplayComponent>())
+            {
+                obj->GetComponent<HighScoreDisplayComponent>()->SaveHighScore();
+                break;
+            }
+        }
+		//reset player stats
+        SetPlayerHealth(3);
+        SetPlayerScore(0);
+
        yev::SceneManager::GetInstance().SetActiveScene("EndScreen");
        m_CurrentLevel = 0;
        return true;

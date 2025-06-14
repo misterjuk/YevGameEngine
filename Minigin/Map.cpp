@@ -19,6 +19,7 @@
 #include "FPSComponent.h"
 #include "ScoreComponent.h"
 #include "GameManager.h"
+#include "HighScoreDisplayComponent.h"
 
 Map::Map(yev::GameObject* ownerObjectPtr)
     : yev::Component(ownerObjectPtr),
@@ -237,7 +238,8 @@ void Map::SpawnPlayers(yev::Scene& scene)
 
     if(!m_UIInitialized)
     {
-    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 50);
+        
+    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 30);
     //BAD WORKAROUND
     auto scoreDisplay = std::make_unique<yev::GameObject>();
     scoreDisplay->AddComponent<yev::TransformComponent>(scoreDisplay.get());
@@ -246,14 +248,25 @@ void Map::SpawnPlayers(yev::Scene& scene)
     scoreDisplay->AddComponent<ScoreDisplayComponent>(scoreDisplay.get(), scoreDisplay->GetComponent<yev::TextComponent>());
 
     player->GetComponent<ScoreComponent>()->AddObserver(scoreDisplay->GetComponent<ScoreDisplayComponent>());
+
+
+    auto highscoreDisplay = std::make_unique<yev::GameObject>();
+    highscoreDisplay->AddComponent<yev::TransformComponent>(highscoreDisplay.get());
+    highscoreDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 500, 0);
+    highscoreDisplay->AddComponent<yev::TextComponent>(highscoreDisplay.get(), "HighScore", font);
+    highscoreDisplay->AddComponent<HighScoreDisplayComponent>(highscoreDisplay.get(), highscoreDisplay->GetComponent<yev::TextComponent>());
+
+    player->GetComponent<ScoreComponent>()->AddObserver(highscoreDisplay->GetComponent<HighScoreDisplayComponent>());
+
     //BAD WORKAROUND
     auto healthDisplay = std::make_unique<yev::GameObject>();
     healthDisplay->AddComponent<yev::TransformComponent>(healthDisplay.get());
-    healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 500, 0);
+    healthDisplay->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 600, 0);
     healthDisplay->AddComponent<yev::TextComponent>(healthDisplay.get(), "Health", font);
     healthDisplay->AddComponent<HealthDisplayComponent>(healthDisplay.get(), healthDisplay->GetComponent<yev::TextComponent>());
 
     scene.Add(std::move(scoreDisplay));
+    scene.Add(std::move(highscoreDisplay));
     scene.Add(std::move(healthDisplay));
 
     }
@@ -268,8 +281,16 @@ void Map::SpawnPlayers(yev::Scene& scene)
                 player->GetComponent<ScoreComponent>()->AddObserver(obj->GetComponent<ScoreDisplayComponent>());
                 //BAD WORKAROUND
                 obj->GetComponent<ScoreDisplayComponent>()->ForceScoreUpdate();
-                break;
+                //break;
 				//should be return or something like that to stop the loop, but this is a workaround
+            }
+            else if (obj->HasComponent<HighScoreDisplayComponent>())
+            {
+                player->GetComponent<ScoreComponent>()->AddObserver(obj->GetComponent<HighScoreDisplayComponent>());
+                //BAD WORKAROUND
+                obj->GetComponent<HighScoreDisplayComponent>()->ForceScoreUpdate();
+                //break;
+                //should be return or something like that to stop the loop, but this is a workaround
             }
         }
     }
@@ -426,6 +447,14 @@ void Map::UnregisterPlayer(Player* player)
 
 void Map::ClearLevel()
 {
+	
+    if (!m_Players.empty()) {
+        Player* player = m_Players[0]; // Assuming single player for simplicity
+        if (player && player->GetOwner() && player->GetOwner()->HasComponent<ScoreComponent>()) {
+            player->GetOwner()->GetComponent<ScoreComponent>()->SetScore(GameManager::GetInstance().GetPlayerScore());
+          
+        }
+    }
 
     for (auto* enemy : m_Enemies)
     {
@@ -461,6 +490,7 @@ void Map::ClearLevel()
 
 void Map::LoadNextLevel()
 {
+   
 
 	int nextLevelIndex = m_ThisMapLevelIndex + 1;
 
@@ -546,13 +576,14 @@ void Map::LoadLevel(yev::Scene& scene, int levelIndex)
 void Map::CreateUI(yev::Scene& scene)
 {
     // Add UI elements (based on Main.cpp's load function)
-    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 50);
+    auto hugefont = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 60);
+    auto font = yev::ResourceManager::GetInstance().LoadFont("Lingua.otf", 40);
 
 
     auto digdug = std::make_unique<yev::GameObject>();
     digdug->AddComponent<yev::TransformComponent>(digdug.get());
-    digdug->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 50, 0);
-    digdug->AddComponent<yev::TextComponent>(digdug.get(), "DigDug", font);
+    digdug->GetComponent<yev::TransformComponent>()->SetLocalPosition(1050, 100, 0);
+    digdug->AddComponent<yev::TextComponent>(digdug.get(), "DigDug", hugefont);
    
   
 

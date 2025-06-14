@@ -7,6 +7,8 @@
 #include "Time.h"
 #include <iostream>
 #include "Enemy.h"
+#include "ScoreComponent.h"
+#include "ServiceLocator.h"
 
 // CREATING STATES EACH TIME IS BAD SHOULD REDO IT
 
@@ -262,16 +264,20 @@ void PlayerAttackingState::Update(Player* player, float deltaTime)
                 m_HasHitEnemy = false;
                 m_TargetEnemy = nullptr;
 
+                yev::ServiceLocator::GetInstance().GetSoundSystem()->LoadSoundEffect(1, "Sound/Sound1.wav", 16, 0);
+
+                // If the player has a score component, reward player for each pump
+                 if (auto scoreComp = player->GetOwner()->GetComponent<ScoreComponent>())
+                {
+                    scoreComp->AddScore(50);
+                }
+
                 auto newState = HandleStateExpired(player);
                 if (newState)
                     player->ChangeState(std::move(newState));
                 return;
             }
-            // If the player has a score component, reward player for each pump
-         /*   if (auto scoreComp = player->GetOwner()->GetComponent<ScoreComponent>())
-            {
-                scoreComp->AddScore(10);
-            }*/
+           
         }
     }
     else {

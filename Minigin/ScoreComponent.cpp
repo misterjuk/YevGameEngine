@@ -7,11 +7,10 @@
 #include "GameManager.h"
 
 ScoreComponent::ScoreComponent(yev::GameObject* ownerObjectPtr)
-    : yev::Component(ownerObjectPtr), m_currentScore(0), m_highScore(0)
+    : yev::Component(ownerObjectPtr), m_currentScore(0)
 {
 
-    //LoadHighScore();
-
+   
 }
 
 void ScoreComponent::AddScore(int score)
@@ -28,35 +27,6 @@ void ScoreComponent::AddScore(int score)
 	NotifyObservers(GameEvents::ScoreChanged, m_Owner);
 }
 
-void ScoreComponent::SaveHighScore()
-{
-    std::ofstream file(m_highScoreFilePath);
-    if (file.is_open())
-    {
-        file << m_highScore;
-        file.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open file for saving high score: " << m_highScoreFilePath << std::endl;
-    }
-}
-
-void ScoreComponent::LoadHighScore()
-{
-    std::ifstream file(m_highScoreFilePath);
-    if (file.is_open())
-    {
-        file >> m_highScore;
-
-        //m_ScoreText->SetText("HighScore: " + std::to_string(m_highScore));
-        file.close();
-    }
-    else
-    {
-        std::cerr << "Unable to open file for loading high score: " << m_highScoreFilePath << std::endl;
-    }
-}
 
 void ScoreComponent::Notify(Event, yev::GameObject*)
 {
@@ -78,11 +48,4 @@ void ScoreComponent::SetScore(int score)
     NotifyObservers(GameEvents::ScoreChanged, m_Owner); 
 }
 
-void ScoreComponent::UpdateHighScore()
-{
-    if (m_currentScore > m_highScore)
-    {
-        m_highScore = m_currentScore;
-        SaveHighScore();
-    }
-}
+
